@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>👗 Style Battle!</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{--p1:#f472b6;--p2:#818cf8;--gold:#fbbf24;--text:#2d1b4e;--bg:#fdf4ff;--soft:#9d7ec0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;overflow-x:hidden;
+  background-image:radial-gradient(circle at 15% 20%,#fce7f3 0%,transparent 40%),radial-gradient(circle at 85% 80%,#ede9fe 0%,transparent 40%);}
+
+.screen{display:none;min-height:100vh;flex-direction:column;align-items:center;padding:1rem;}
+.screen.active{display:flex;}
+
+/* COMMON */
+.logo{font-family:'Fredoka One',cursive;font-size:clamp(2rem,7vw,3rem);
+  background:linear-gradient(135deg,var(--p1),var(--p2));-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;text-align:center;}
+.btn{border:none;border-radius:14px;padding:.7rem 1.2rem;font-family:'Nunito',sans-serif;
+  font-weight:800;font-size:1rem;cursor:pointer;transition:all .2s;color:white;}
+.btn:hover{transform:translateY(-2px) scale(1.02);}
+.btn:active{transform:scale(.97);}
+.btn-p{background:linear-gradient(135deg,var(--p1),#ec4899);box-shadow:0 4px 14px rgba(244,114,182,.35);}
+.btn-s{background:linear-gradient(135deg,var(--p2),#6366f1);box-shadow:0 4px 14px rgba(129,140,248,.35);}
+.btn-g{background:linear-gradient(135deg,#34d399,#059669);}
+.btn-gold{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1a0a00;}
+.btn-dark{background:rgba(255,255,255,.1);color:white;border:2px solid rgba(255,255,255,.2);}
+
+.conn{position:fixed;top:.5rem;right:.5rem;font-size:.68rem;font-weight:800;
+  padding:.2rem .55rem;border-radius:10px;z-index:999;}
+.conn.on{background:#dcfce7;color:#15803d;}
+.conn.off{background:#fee2e2;color:#b91c1c;}
+.conn.wait{background:#fef9c3;color:#92400e;}
+
+.modal{background:white;border-radius:2rem;padding:1.8rem;width:100%;max-width:340px;
+  box-shadow:0 12px 40px rgba(0,0,0,.1);display:flex;flex-direction:column;gap:.9rem;align-items:center;}
+.modal h2{font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--p1);}
+.field{width:100%;border:2.5px solid #e9d5ff;border-radius:14px;padding:.65rem 1rem;
+  font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;color:var(--text);
+  background:#fdf4ff;outline:none;text-align:center;}
+.field:focus{border-color:var(--p1);}
+.code-field{font-family:'Fredoka One',cursive;font-size:2rem;letter-spacing:6px;text-transform:uppercase;border-color:var(--p2);}
+.room-code{background:linear-gradient(135deg,var(--p1),var(--p2));color:white;
+  border-radius:16px;padding:.7rem 1.5rem;font-family:'Fredoka One',cursive;
+  font-size:2.6rem;letter-spacing:6px;}
+.dots span{animation:bounce 1.2s infinite;display:inline-block;}
+.dots span:nth-child(2){animation-delay:.2s;}.dots span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-7px)}}
+
+/* HOME */
+#homeScreen{justify-content:center;gap:.8rem;}
+.home-btn{border:none;border-radius:18px;padding:1rem 1.5rem;font-family:'Nunito',sans-serif;
+  font-weight:900;font-size:1.05rem;color:white;cursor:pointer;transition:all .2s;
+  box-shadow:0 6px 20px rgba(0,0,0,.12);display:flex;align-items:center;gap:.6rem;justify-content:center;width:100%;max-width:300px;}
+.home-btn:hover{transform:translateY(-3px);}
+
+/* THEME SCREEN */
+#themeScreen{justify-content:flex-start;padding-top:.8rem;}
+.theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;width:100%;max-width:500px;margin-top:.4rem;}
+@media(min-width:500px){.theme-grid{grid-template-columns:repeat(3,1fr);}}
+.theme-card{background:white;border-radius:1.2rem;padding:.8rem .6rem;text-align:center;
+  cursor:pointer;transition:all .2s;border:3px solid transparent;box-shadow:0 3px 12px rgba(0,0,0,.07);}
+.theme-card:hover{transform:translateY(-3px);}
+.theme-card.sel{border-color:var(--p1);background:#fce7f3;}
+.te{font-size:1.8rem;}.tn{font-weight:800;font-size:.8rem;color:var(--text);margin-top:.2rem;}
+.tk{font-size:.65rem;color:var(--soft);font-weight:600;margin-top:.1rem;line-height:1.3;}
+
+/* DRESS SCREEN */
+#dressScreen{justify-content:flex-start;padding:.5rem .6rem 5rem;}
+.dress-top{width:100%;max-width:480px;display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;}
+.theme-pill{flex:1;background:linear-gradient(135deg,var(--p1),var(--p2));border-radius:20px;
+  padding:.4rem .9rem;font-family:'Fredoka One',cursive;color:white;font-size:.9rem;text-align:center;}
+.timer-box{background:white;border-radius:12px;padding:.35rem .65rem;
+  font-family:'Fredoka One',cursive;font-size:1.15rem;color:var(--p1);
+  box-shadow:0 2px 8px rgba(0,0,0,.08);min-width:3.5rem;text-align:center;}
+.timer-box.red{color:#ef4444;animation:tp .8s ease infinite;}
+@keyframes tp{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Score preview */
+.score-preview{background:white;border-radius:14px;padding:.4rem .8rem;
+  font-family:'Fredoka One',cursive;font-size:1rem;color:var(--gold);
+  box-shadow:0 2px 8px rgba(0,0,0,.06);text-align:center;width:100%;max-width:480px;
+  margin-bottom:.3rem;}
+
+.char-stage{display:flex;justify-content:center;margin-bottom:.4rem;}
+.char-stage svg{width:120px;height:200px;overflow:visible;}
+
+.cat-tabs{display:flex;gap:.35rem;width:100%;max-width:480px;margin-bottom:.45rem;overflow-x:auto;scrollbar-width:none;}
+.cat-tabs::-webkit-scrollbar{display:none;}
+.cat-tab{flex-shrink:0;border:none;border-radius:20px;padding:.3rem .75rem;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:.78rem;cursor:pointer;
+  transition:all .2s;background:white;color:var(--soft);border:2px solid #e9d5ff;}
+.cat-tab.active{background:var(--p1);color:white;border-color:var(--p1);}
+
+.choices-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem;width:100%;max-width:480px;}
+@media(min-width:480px){.choices-grid{grid-template-columns:repeat(5,1fr);}}
+.cc{background:white;border-radius:1rem;padding:.55rem .35rem;text-align:center;
+  cursor:pointer;transition:all .2s;border:2.5px solid #e9d5ff;
+  display:flex;flex-direction:column;align-items:center;gap:.2rem;position:relative;}
+.cc:hover{border-color:var(--p1);transform:scale(1.04);}
+.cc.sel{border-color:var(--p1);background:#fce7f3;box-shadow:0 4px 12px rgba(244,114,182,.25);}
+.cc .ce{font-size:1.5rem;}.cc .cn{font-size:.63rem;font-weight:800;color:var(--text);line-height:1.2;}
+.cc .cd{width:14px;height:14px;border-radius:50%;margin:0 auto;border:1.5px solid rgba(0,0,0,.1);}
+.cc .pts-badge{position:absolute;top:-6px;right:-6px;background:var(--gold);color:#1a0a00;
+  font-size:.58rem;font-weight:900;padding:.1rem .3rem;border-radius:8px;
+  font-family:'Nunito',sans-serif;display:none;}
+.cc.theme-bonus .pts-badge{display:block;}
+.cc.theme-bonus{border-color:#fbbf24;}
+
+.ready-wrap{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);
+  z-index:50;width:calc(100% - 1.4rem);max-width:480px;}
+.ready-btn{width:100%;padding:.85rem;font-size:1.05rem;border-radius:16px;}
+
+/* RUNWAY */
+#runwayScreen{justify-content:center;gap:.8rem;
+  background:linear-gradient(180deg,#0f0a1e 0%,#1a0a2e 50%,#0f0a1e 100%);}
+.runway-wrap{width:100%;max-width:380px;position:relative;height:55vh;
+  display:flex;align-items:flex-end;justify-content:center;overflow:hidden;}
+.runway-floor{position:absolute;bottom:0;left:-20%;right:-20%;height:38%;
+  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.08));
+  border-top:2px solid rgba(255,255,255,.15);
+  clip-path:polygon(10% 0%,90% 0%,100% 100%,0% 100%);}
+.runway-lights{position:absolute;bottom:38%;left:5%;right:5%;
+  display:flex;justify-content:space-between;}
+.rl{width:9px;height:9px;border-radius:50%;background:var(--gold);
+  box-shadow:0 0 14px var(--gold);animation:lb 1.5s ease infinite;}
+.rl:nth-child(2){animation-delay:.25s;}.rl:nth-child(3){animation-delay:.5s;}
+.rl:nth-child(4){animation-delay:.75s;}.rl:nth-child(5){animation-delay:1s;}
+.rl:nth-child(6){animation-delay:1.25s;}
+@keyframes lb{0%,100%{opacity:1}50%{opacity:.2}}
+.runway-char{position:absolute;bottom:38%;left:50%;transform:translateX(-50%);
+  animation:walkIn 3.2s cubic-bezier(.25,.46,.45,.94) forwards;}
+@keyframes walkIn{0%{bottom:-25%;opacity:0;transform:translateX(-50%) scale(.7)}
+  60%{opacity:1}100%{bottom:40%;opacity:1;transform:translateX(-50%) scale(1)}}
+.runway-char svg{width:100px;height:168px;overflow:visible;}
+.rw-name{font-family:'Fredoka One',cursive;font-size:1.8rem;
+  background:linear-gradient(135deg,var(--gold),var(--p1));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-align:center;}
+.rw-sub{color:rgba(255,255,255,.6);font-weight:700;font-size:.85rem;text-align:center;}
+.spotlight{position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:200px;height:100%;
+  background:radial-gradient(ellipse at top,rgba(255,220,100,.12) 0%,transparent 70%);
+  pointer-events:none;}
+
+/* RESULTS */
+#resultsScreen{justify-content:center;gap:1rem;
+  background:linear-gradient(180deg,#0f0a1e 0%,#1a0a2e 100%);}
+.res-card{background:rgba(255,255,255,.07);backdrop-filter:blur(12px);
+  border-radius:2rem;padding:1.8rem 1.5rem;width:100%;max-width:380px;
+  border:2px solid rgba(255,255,255,.12);text-align:center;}
+.res-trophy{font-size:4rem;margin-bottom:.3rem;}
+.res-title{font-family:'Fredoka One',cursive;font-size:2rem;
+  background:linear-gradient(135deg,var(--gold),var(--p1));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.res-scores{display:flex;gap:.8rem;justify-content:center;margin:1rem 0;}
+.rscore{padding:.6rem .9rem;border-radius:14px;font-weight:800;text-align:center;min-width:110px;}
+.rscore.p1c{background:rgba(244,114,182,.15);border:2px solid var(--p1);}
+.rscore.p2c{background:rgba(129,140,248,.15);border:2px solid var(--p2);}
+.rscore .sv{font-family:'Fredoka One',cursive;font-size:1.5rem;color:white;}
+.rscore .sn{font-size:.72rem;color:rgba(255,255,255,.7);}
+.rscore .sb{font-size:.68rem;color:rgba(255,255,255,.5);margin-top:.15rem;}
+.score-breakdown{background:rgba(255,255,255,.05);border-radius:12px;
+  padding:.7rem 1rem;margin:.5rem 0;text-align:left;}
+.score-breakdown .sbr{display:flex;justify-content:space-between;
+  font-size:.78rem;color:rgba(255,255,255,.7);font-weight:700;padding:.15rem 0;}
+.score-breakdown .sbr .val{color:var(--gold);}
+
+/* PHASE */
+.phase-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--p1),var(--p2));
+  z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:.8rem;opacity:0;pointer-events:none;transition:opacity .3s;}
+.phase-screen.show{opacity:1;pointer-events:all;}
+.phase-big{font-family:'Fredoka One',cursive;font-size:clamp(2rem,8vw,4rem);
+  color:white;text-align:center;padding:0 1rem;text-shadow:0 4px 20px rgba(0,0,0,.2);}
+.phase-sub{color:rgba(255,255,255,.85);font-weight:700;font-size:.9rem;
+  text-align:center;max-width:300px;line-height:1.5;}
+
+/* CONFETTI */
+.cf{position:fixed;pointer-events:none;z-index:300;border-radius:3px;
+  animation:cfFall 1.8s ease-in forwards;}
+@keyframes cfFall{from{transform:translateY(-30px) rotate(0);opacity:1}
+  to{transform:translateY(105vh) rotate(600deg);opacity:0}}
+
+/* WAITING SCREEN */
+#waitScreen{justify-content:center;}
+.wait-card{background:white;border-radius:2rem;padding:2rem;width:100%;max-width:340px;
+  text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.1);
+  display:flex;flex-direction:column;gap:.8rem;align-items:center;}
+.wait-card h2{font-family:'Fredoka One',cursive;color:var(--soft);}
+</style>
+</head>
+<body>
+
+<div class="conn off" id="connBadge">⚪ Not Connected</div>
+
+<div class="phase-screen" id="phaseScreen">
+  <div id="phaseEmoji" style="font-size:3rem">✨</div>
+  <div class="phase-big" id="phaseBig">Get Ready!</div>
+  <div class="phase-sub" id="phaseSub"></div>
+</div>
+
+<!-- HOME -->
+<div class="screen active" id="homeScreen">
+  <div class="logo" style="margin-top:2.5rem;margin-bottom:.3rem">👗 Style Battle!</div>
+  <p style="color:var(--soft);font-weight:700;font-size:.9rem;margin-bottom:1.2rem;text-align:center">The ultimate fashion showdown! 💅</p>
+  <button class="home-btn btn-p" onclick="goCreate()"><span style="font-size:1.3rem">🎮</span> Create Room</button>
+  <button class="home-btn btn-s" onclick="goJoin()"><span style="font-size:1.3rem">🔗</span> Join with Code</button>
+  <button class="home-btn btn-g" onclick="goSolo()"><span style="font-size:1.3rem">👤</span> Play Solo</button>
+</div>
+
+<!-- CREATE -->
+<div class="screen" id="createScreen">
+  <div class="modal" style="margin-top:3rem">
+    <h2>🎮 Your Room</h2>
+    <p style="color:var(--soft);font-weight:600;font-size:.85rem;text-align:center">Share this code with your friend!</p>
+    <div class="room-code" id="roomCodeDisplay">----</div>
+    <button class="btn btn-s" style="width:100%;padding:.5rem" onclick="copyCode()">📋 Copy Code</button>
+    <input class="field" id="createName" placeholder="Your name" value="Shelly">
+    <p style="color:var(--soft);font-weight:700;font-size:.82rem;text-align:center">
+      Waiting for friend<span class="dots"><span>.</span><span>.</span><span>.</span></span>
+    </p>
+    <p style="color:#15803d;font-size:.78rem;font-weight:700;text-align:center">🚀 Game starts automatically when they join!</p>
+    <button class="btn btn-s" style="width:100%;background:white;color:var(--soft);border:2px solid #e9d5ff" onclick="goHome()">← Back</button>
+  </div>
+</div>
+
+<!-- JOIN -->
+<div class="screen" id="joinScreen">
+  <div class="modal" style="margin-top:3rem">
+    <h2 style="color:var(--p2)">🔗 Join Room</h2>
+    <p style="color:var(--soft);font-weight:600;font-size:.85rem;text-align:center">Ask your friend for their code!</p>
+    <input class="field code-field" id="joinCode" placeholder="CODE" maxlength="6" oninput="this.value=this.value.toUpperCase()">
+    <input class="field" id="joinName" placeholder="Your name" value="Dad">
+    <button class="home-btn btn-s" style="max-width:100%" onclick="doJoin()">🚀 Join!</button>
+    <div id="joinMsg" style="font-weight:700;font-size:.82rem;min-height:1.2rem;text-align:center;color:var(--soft)"></div>
+    <button class="btn btn-s" style="width:100%;background:white;color:var(--soft);border:2px solid #e9d5ff" onclick="goHome()">← Back</button>
+  </div>
+</div>
+
+<!-- WAIT (guest waits while host picks theme) -->
+<div class="screen" id="waitScreen">
+  <div class="wait-card">
+    <div style="font-size:3rem">🎨</div>
+    <h2>Waiting for theme<span class="dots"><span>.</span><span>.</span><span>.</span></span></h2>
+    <p style="color:var(--soft);font-weight:600;font-size:.85rem">The host is picking the theme for this round!</p>
+  </div>
+</div>
+
+<!-- THEME SELECT (host only) -->
+<div class="screen" id="themeScreen">
+  <div class="logo" style="font-size:1.5rem;margin-top:.5rem">🎨 Pick a Theme</div>
+  <p style="color:var(--soft);font-weight:700;font-size:.8rem;margin:.2rem 0 .4rem">You pick the theme — your opponent doesn't know! 😏</p>
+  <div class="theme-grid" id="themeGrid"></div>
+  <button class="btn btn-p" style="width:100%;max-width:500px;margin-top:.7rem;padding:.8rem" onclick="startWithTheme()">▶ Start Dressing!</button>
+</div>
+
+<!-- DRESS UP -->
+<div class="screen" id="dressScreen">
+  <div class="dress-top">
+    <div class="theme-pill" id="dressThemeName">👑 Princess</div>
+    <div class="timer-box" id="timerBox">3:00</div>
+  </div>
+
+  <div class="score-preview" id="scorePrev">⭐ Score: 0 pts — pick items to score!</div>
+
+  <div class="char-stage">
+    <svg id="dressSvg" viewBox="0 0 180 310" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="dSkin" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FDDBB4"/><stop offset="100%" stop-color="#F0B88A"/></linearGradient>
+        <linearGradient id="dRainbow" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f87171"/><stop offset="33%" stop-color="#facc15"/><stop offset="66%" stop-color="#4ade80"/><stop offset="100%" stop-color="#c084fc"/></linearGradient>
+        <filter id="dDs"><feDropShadow dx="1" dy="3" stdDeviation="3" flood-opacity="0.12"/></filter>
+      </defs>
+      <ellipse cx="90" cy="306" rx="44" ry="6" fill="rgba(0,0,0,0.07)"/>
+      <rect x="67" y="238" width="20" height="62" rx="10" fill="url(#dSkin)"/>
+      <rect x="93" y="238" width="20" height="62" rx="10" fill="url(#dSkin)"/>
+      <ellipse id="dSL" cx="77" cy="302" rx="17" ry="8" fill="#E8547A"/>
+      <ellipse id="dSR" cx="103" cy="302" rx="17" ry="8" fill="#E8547A"/>
+      <path id="dSkirt" d="M54 176 Q50 200 42 248 Q66 260 90 262 Q114 260 138 248 Q130 200 126 176 Z" fill="#FFB3C8" filter="url(#dDs)"/>
+      <rect id="dTorso" x="58" y="115" width="64" height="68" rx="14" fill="#FFB3C8" filter="url(#dDs)"/>
+      <path id="dCollar" d="M80 115 Q90 128 100 115" fill="none" stroke="#FF85A1" stroke-width="4" stroke-linecap="round"/>
+      <rect x="38" y="118" width="22" height="56" rx="11" fill="url(#dSkin)"/>
+      <rect x="120" y="118" width="22" height="56" rx="11" fill="url(#dSkin)"/>
+      <circle cx="49" cy="177" r="11" fill="url(#dSkin)"/>
+      <circle cx="131" cy="177" r="11" fill="url(#dSkin)"/>
+      <rect x="81" y="103" width="18" height="16" rx="6" fill="url(#dSkin)"/>
+      <ellipse id="dHB" cx="90" cy="78" rx="44" ry="48" fill="#8B5A2B" filter="url(#dDs)"/>
+      <ellipse cx="90" cy="80" rx="38" ry="42" fill="url(#dSkin)" filter="url(#dDs)"/>
+      <ellipse cx="52" cy="82" rx="7" ry="9" fill="#F0B88A"/>
+      <ellipse cx="128" cy="82" rx="7" ry="9" fill="#F0B88A"/>
+      <ellipse id="dHF" cx="90" cy="56" rx="42" ry="24" fill="#8B5A2B"/>
+      <path id="dHL" d="M52 64 Q72 46 90 44 Q108 46 128 64" fill="#8B5A2B"/>
+      <path d="M68 64 Q76 59 82 62" stroke="#5C3317" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M98 62 Q104 59 112 64" stroke="#5C3317" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="75" cy="78" rx="9" ry="10" fill="white"/>
+      <ellipse cx="105" cy="78" rx="9" ry="10" fill="white"/>
+      <ellipse cx="75" cy="79" rx="6" ry="7" fill="#5B3A8C"/>
+      <ellipse cx="105" cy="79" rx="6" ry="7" fill="#5B3A8C"/>
+      <ellipse cx="75" cy="80" rx="3.5" ry="4.5" fill="#1a0010"/>
+      <ellipse cx="105" cy="80" rx="3.5" ry="4.5" fill="#1a0010"/>
+      <ellipse cx="77" cy="76" rx="2" ry="2.5" fill="white" opacity=".9"/>
+      <ellipse cx="107" cy="76" rx="2" ry="2.5" fill="white" opacity=".9"/>
+      <path d="M66 71 Q71 67 75 70" stroke="#2C1810" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M75 69 Q79 66 83 70" stroke="#2C1810" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M97 70 Q101 66 105 69" stroke="#2C1810" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M105 70 Q109 67 114 71" stroke="#2C1810" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M86 91 Q90 96 94 91" stroke="#C8845A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="62" cy="88" rx="12" ry="9" fill="rgba(255,133,161,0.25)"/>
+      <ellipse cx="118" cy="88" rx="12" ry="9" fill="rgba(255,133,161,0.25)"/>
+      <path d="M80 100 Q90 96 100 100 Q90 108 80 100" fill="rgba(232,84,122,0.3)" stroke="#E8547A" stroke-width="1.8" stroke-linecap="round"/>
+      <g id="dHE"></g><g id="dAC"></g><g id="dHA"></g>
+    </svg>
+  </div>
+
+  <div class="cat-tabs">
+    <button class="cat-tab active" onclick="showCat('dress',this)">👗 Dress</button>
+    <button class="cat-tab" onclick="showCat('hair',this)">💇 Hair</button>
+    <button class="cat-tab" onclick="showCat('shoes',this)">👠 Shoes</button>
+    <button class="cat-tab" onclick="showCat('acc',this)">✨ Extras</button>
+  </div>
+
+  <div class="choices-grid" id="choicesGrid"></div>
+
+  <div class="ready-wrap">
+    <button class="btn btn-gold ready-btn" onclick="goReady()">✅ Done! Show My Score!</button>
+  </div>
+</div>
+
+<!-- RUNWAY -->
+<div class="screen" id="runwayScreen">
+  <div style="text-align:center;padding-top:.5rem">
+    <div style="color:rgba(255,255,255,.6);font-weight:700;font-size:.85rem;letter-spacing:2px;text-transform:uppercase">✨ Walking the Runway ✨</div>
+    <div class="rw-name" id="rwName">Shelly</div>
+  </div>
+  <div class="runway-wrap">
+    <div class="spotlight"></div>
+    <div class="runway-floor"></div>
+    <div class="runway-lights">
+      <div class="rl"></div><div class="rl"></div><div class="rl"></div>
+      <div class="rl"></div><div class="rl"></div><div class="rl"></div>
+    </div>
+    <div class="runway-char" id="rwChar">
+      <svg id="rwSvg" viewBox="0 0 180 310" xmlns="http://www.w3.org/2000/svg" style="overflow:visible"></svg>
+    </div>
+  </div>
+  <div class="rw-sub" id="rwMsg">Walking the runway…</div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="resultsScreen">
+  <div class="res-card">
+    <div class="res-trophy" id="resTrophy">🏆</div>
+    <div class="res-title" id="resTitle">Winner!</div>
+    <div id="resWinner" style="color:white;font-weight:800;font-size:1rem;margin:.3rem 0"></div>
+    <div class="res-scores">
+      <div class="rscore p1c">
+        <div class="sn" id="resN1">P1</div>
+        <div class="sv" id="resScore1">0</div>
+        <div class="sb" id="resBrk1"></div>
+      </div>
+      <div class="rscore p2c">
+        <div class="sn" id="resN2">P2</div>
+        <div class="sv" id="resScore2">0</div>
+        <div class="sb" id="resBrk2"></div>
+      </div>
+    </div>
+    <div class="score-breakdown" id="scoreBreakdown"></div>
+    <div id="resReason" style="color:rgba(255,255,255,.6);font-size:.8rem;font-weight:600;margin:.5rem 0 1rem;line-height:1.5"></div>
+    <button class="btn btn-p" style="width:100%;padding:.8rem" onclick="playAgain()">🔄 Play Again!</button>
+    <button class="btn btn-dark" style="width:100%;margin-top:.5rem;padding:.7rem" onclick="goHome()">🏠 Home</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  ITEM DATA
+// ═══════════════════════════════════════════════════
+const DRESSES = [
+  {id:'princess-pink',  name:'Princess Gown', emoji:'👗', color:'#FF85A1', topColor:'#FF85A1', skirt:'M46 176 Q40 198 30 250 Q62 268 90 270 Q118 268 150 250 Q140 198 134 176 Z', tags:['princess','pink','royal','elegant']},
+  {id:'elsa',           name:'Elsa Dress',    emoji:'🧊', color:'#7dd3fc', topColor:'#7dd3fc', skirt:'M46 176 Q40 198 30 250 Q62 268 90 270 Q118 268 150 250 Q140 198 134 176 Z', tags:['frozen','elsa','ice','blue','snow']},
+  {id:'witch-robe',     name:'Witch Robe',    emoji:'🔮', color:'#7c3aed', topColor:'#1c1c1c', skirt:'M54 176 Q50 200 42 248 Q66 260 90 262 Q114 260 138 248 Q130 200 126 176 Z', tags:['witch','halloween','wicked','dark','magic','purple']},
+  {id:'flower-dress',   name:'Flower Dress',  emoji:'🌸', color:'#fb7185', topColor:'#fda4af', skirt:'M54 176 Q50 200 42 248 Q66 260 90 262 Q114 260 138 248 Q130 200 126 176 Z', tags:['garden','flower','spring','pink','floral'], flowers:true},
+  {id:'mulan',          name:'Mulan Kimono',  emoji:'🈶', color:'#dc2626', topColor:'#dc2626', skirt:'M54 176 Q50 200 42 248 Q66 260 90 262 Q114 260 138 248 Q130 200 126 176 Z', tags:['mulan','red','silk','warrior','gold']},
+  {id:'mermaid-gown',   name:'Mermaid Gown',  emoji:'🧜', color:'#14b8a6', topColor:'#0891b2', skirt:'M60 176 Q58 205 50 252 Q70 264 90 266 Q110 264 130 252 Q122 205 120 176 Z', tags:['mermaid','teal','ocean','sea','blue']},
+  {id:'hogwarts',       name:'Hogwarts Robe', emoji:'⚡', color:'#1e3a5f', topColor:'#1e3a5f', skirt:'M48 176 Q44 200 36 250 Q64 264 90 266 Q116 264 144 250 Q136 200 132 176 Z', tags:['potter','hogwarts','magic','dark','wizard']},
+  {id:'wicked',         name:'Wicked Dress',  emoji:'🟢', color:'#16a34a', topColor:'#15803d', skirt:'M46 176 Q40 198 30 250 Q62 268 90 270 Q118 268 150 250 Q140 198 134 176 Z', tags:['wicked','green','witch','dark','magic']},
+  {id:'tutu',           name:'Ballet Tutu',   emoji:'🩰', color:'#fce7f3', topColor:'#fbcfe8', skirt:'M44 176 Q38 194 26 244 Q60 268 90 272 Q120 268 154 244 Q142 194 136 176 Z', tags:['princess','ballet','pink','dance','soft']},
+  {id:'rainbow',        name:'Rainbow Dress', emoji:'🌈', color:'rainbow', topColor:'rainbow', skirt:'M46 176 Q40 198 30 250 Q62 268 90 270 Q118 268 150 250 Q140 198 134 176 Z', tags:['candy','rainbow','colorful','fun','bright']},
+  {id:'gold-gown',      name:'Gold Gown',     emoji:'✨', color:'#fbbf24', topColor:'#fbbf24', skirt:'M46 176 Q40 198 30 250 Q62 268 90 270 Q118 268 150 250 Q140 198 134 176 Z', tags:['princess','gold','elegant','royal','shine']},
+  {id:'night-dress',    name:'Night Gown',    emoji:'🌙', color:'#312e81', topColor:'#1e1b4b', skirt:'M46 176 Q40 198 30 250 Q62 268 90 270 Q118 268 150 250 Q140 198 134 176 Z', tags:['night','dark','stars','elegant','midnight']},
+  {id:'cherry',         name:'Cherry Blossom',emoji:'🌺', color:'#f43f5e', topColor:'#fb7185', skirt:'M54 176 Q50 200 42 248 Q66 260 90 262 Q114 260 138 248 Q130 200 126 176 Z', tags:['garden','cherry','spring','pink','floral'], flowers:true},
+  {id:'ocean',          name:'Ocean Blue',    emoji:'🌊', color:'#3b82f6', topColor:'#60a5fa', skirt:'M46 176 Q40 198 30 250 Q62 268 90 270 Q118 268 150 250 Q140 198 134 176 Z', tags:['mermaid','ocean','blue','beach','sea','water']},
+  {id:'candy',          name:'Candy Dress',   emoji:'🍬', color:'#e879f9', topColor:'#f0abfc', skirt:'M54 176 Q50 200 42 248 Q66 260 90 262 Q114 260 138 248 Q130 200 126 176 Z', tags:['candy','pink','sweet','fun','colorful','bright']},
+];
+const HAIRSTYLES = [
+  {id:'brunette-long',   name:'Long Brown',      emoji:'🟤', style:'long',        color:'#8B5A2B', tags:['elegant','classic','simple']},
+  {id:'blonde-long',     name:'Blonde Long',     emoji:'👱', style:'long',        color:'#F5DEB3', tags:['princess','elsa','frozen','blonde','royal']},
+  {id:'black-bun',       name:'Black Bun',       emoji:'🖤', style:'bun',         color:'#1c1c1c', tags:['mulan','night','elegant','dark','warrior']},
+  {id:'2-braids',        name:'2 Braids',        emoji:'🪢', style:'braids',      color:'#8B5A2B', tags:['simple','cute','garden','spring']},
+  {id:'blonde-braids',   name:'Blonde Braids',   emoji:'🌾', style:'braids',      color:'#F5DEB3', tags:['princess','frozen','elsa','blonde']},
+  {id:'red-curly',       name:'Red Curls',       emoji:'🔴', style:'curly',       color:'#dc2626', tags:['halloween','wicked','witch','bold']},
+  {id:'black-ponytail',  name:'Black Ponytail',  emoji:'🖤', style:'ponytail',    color:'#1c1c1c', tags:['mulan','night','dark','warrior','sleek']},
+  {id:'pink-pigtails',   name:'Pink Pigtails',   emoji:'🎀', style:'pigtails',    color:'#FF85A1', tags:['candy','cute','fun','pink','sweet']},
+  {id:'silver-waves',    name:'Silver Waves',    emoji:'🌊', style:'waves',       color:'#d1d5db', tags:['night','mermaid','elegant','silver','stars']},
+  {id:'braid-crown',     name:'Braid Crown',     emoji:'👑', style:'braidcrown',  color:'#F5DEB3', tags:['princess','royal','mulan','elegant','warrior']},
+  {id:'elsa-braid',      name:'Elsa Braid',      emoji:'❄️', style:'ponytail',   color:'#bae6fd', tags:['frozen','elsa','ice','snow','blue']},
+  {id:'rainbow-curly',   name:'Rainbow Curls',   emoji:'🌈', style:'curly',       color:'rainbow', tags:['candy','rainbow','fun','colorful','bright']},
+  {id:'purple-bun',      name:'Purple Bun',      emoji:'💜', style:'bun',         color:'#9333ea', tags:['wicked','witch','magic','purple','dark']},
+  {id:'short-dark',      name:'Short Dark',      emoji:'💇', style:'short',       color:'#2d1b4e', tags:['hogwarts','potter','dark','simple','sleek']},
+  {id:'gold-pixie',      name:'Gold Pixie',      emoji:'✨', style:'pixie',       color:'#fbbf24', tags:['fairy','princess','gold','shine','bright']},
+];
+const SHOES = [
+  {id:'pink-heels',      name:'Pink Heels',      emoji:'👠', color:'#FF85A1', style:'heels',    tags:['princess','elegant','pink','royal']},
+  {id:'glass-slipper',   name:'Glass Slipper',   emoji:'🫧', color:'rgba(180,220,255,0.85)', style:'glass', tags:['princess','cinderella','magic','elegant','shine']},
+  {id:'gold-heels',      name:'Gold Heels',      emoji:'✨', color:'#fbbf24', style:'heels',    tags:['princess','gold','royal','elegant','shine']},
+  {id:'red-boots',       name:'Red Boots',       emoji:'🥾', color:'#dc2626', style:'boots',    tags:['mulan','witch','wicked','warrior','bold']},
+  {id:'black-boots',     name:'Black Boots',     emoji:'🖤', color:'#1c1c1c', style:'boots',    tags:['witch','halloween','wicked','dark','potter']},
+  {id:'white-sneakers',  name:'White Sneakers',  emoji:'👟', color:'#f5f5f5', style:'sneakers', tags:['school','casual','sport','simple','fun']},
+  {id:'pink-sneakers',   name:'Pink Sneakers',   emoji:'🩷', color:'#fce7f3', style:'sneakers', tags:['candy','school','cute','fun','bright']},
+  {id:'silver-heels',    name:'Silver Heels',    emoji:'🪩', color:'#d1d5db', style:'heels',    tags:['night','mermaid','elegant','silver','stars']},
+  {id:'purple-boots',    name:'Purple Boots',    emoji:'💜', color:'#9333ea', style:'boots',    tags:['wicked','witch','magic','purple','dark']},
+  {id:'gold-sandals',    name:'Gold Sandals',    emoji:'🌟', color:'#fbbf24', style:'sandals',  tags:['mulan','beach','gold','summer','shine']},
+  {id:'blue-flats',      name:'Blue Flats',      emoji:'💙', color:'#3b82f6', style:'flats',    tags:['frozen','mermaid','ocean','blue','simple']},
+  {id:'red-heels',       name:'Red Heels',       emoji:'❤️', color:'#dc2626', style:'heels',   tags:['mulan','wicked','bold','warrior','red']},
+  {id:'rainbow-shoes',   name:'Rainbow Kicks',   emoji:'🌈', color:'rainbow', style:'sneakers', tags:['candy','rainbow','fun','colorful','school']},
+  {id:'teal-sandals',    name:'Teal Sandals',    emoji:'🩵', color:'#14b8a6', style:'sandals',  tags:['mermaid','beach','ocean','summer','teal']},
+  {id:'white-boots',     name:'White Boots',     emoji:'🤍', color:'#f5f5f5', style:'boots',    tags:['princess','frozen','snow','elegant','white']},
+];
+const ACCESSORIES = [
+  {id:'crown',     name:'Crown',       emoji:'👑', tags:['princess','royal','gold','elegant']},
+  {id:'tiara',     name:'Tiara',       emoji:'💎', tags:['princess','royal','elegant','shine']},
+  {id:'flower',    name:'Flower',      emoji:'🌸', tags:['garden','spring','mulan','floral','cute']},
+  {id:'bow',       name:'Hair Bow',    emoji:'🎀', tags:['candy','cute','pink','sweet','fun']},
+  {id:'stars',     name:'Star Clips',  emoji:'⭐', tags:['night','candy','stars','shine','bright']},
+  {id:'necklace',  name:'Necklace',    emoji:'📿', tags:['princess','mermaid','elegant','royal','shine']},
+  {id:'earrings',  name:'Earrings',    emoji:'💫', tags:['elegant','royal','princess','mermaid','night']},
+  {id:'glasses',   name:'Glasses',     emoji:'👓', tags:['potter','hogwarts','school','smart','magic']},
+  {id:'wings',     name:'Fairy Wings', emoji:'🦋', tags:['fairy','princess','magical','garden','soft']},
+  {id:'wand',      name:'Magic Wand',  emoji:'🪄', tags:['witch','potter','magic','wicked','wizard']},
+  {id:'witchhat',  name:'Witch Hat',   emoji:'🎩', tags:['witch','halloween','wicked','magic','dark']},
+  {id:'scarf',     name:'Scarf',       emoji:'🧣', tags:['frozen','elsa','snow','ice','winter']},
+  {id:'cape',      name:'Cape',        emoji:'🦸', tags:['potter','witch','wicked','magic','dark']},
+  {id:'hearts',    name:'Hearts',      emoji:'💖', tags:['candy','cute','love','pink','sweet']},
+  {id:'hat',       name:'Fancy Hat',   emoji:'🪄', tags:['elegant','royal','witch','dark','classic']},
+];
+
+// ═══════════════════════════════════════════════════
+//  THEMES — each has keyword list + perfect outfit
+// ═══════════════════════════════════════════════════
+const THEMES = [
+  {id:'princess', name:'👑 Princess',     emoji:'👑', kw:'royal · pink · elegant · crown · sparkle',
+   tags:['princess','royal','pink','elegant','gold','shine'],
+   perfect:{dress:'princess-pink', hair:'blonde-long', shoes:'glass-slipper', acc:'crown'}},
+  {id:'frozen',   name:'❄️ Frozen',       emoji:'❄️', kw:'ice · blue · silver · snow · Elsa',
+   tags:['frozen','elsa','ice','blue','snow','winter','silver'],
+   perfect:{dress:'elsa', hair:'elsa-braid', shoes:'blue-flats', acc:'scarf'}},
+  {id:'potter',   name:'⚡ Harry Potter', emoji:'⚡', kw:'magic · Hogwarts · wand · robes · mysterious',
+   tags:['potter','hogwarts','magic','dark','wizard'],
+   perfect:{dress:'hogwarts', hair:'short-dark', shoes:'black-boots', acc:'wand'}},
+  {id:'mulan',    name:'🌸 Mulan',        emoji:'🌸', kw:'silk · red · gold · brave · warrior',
+   tags:['mulan','red','silk','warrior','gold'],
+   perfect:{dress:'mulan', hair:'black-bun', shoes:'gold-sandals', acc:'flower'}},
+  {id:'mermaid',  name:'🧜 Mermaid',      emoji:'🧜', kw:'ocean · teal · blue · waves · shells',
+   tags:['mermaid','teal','ocean','sea','blue','water'],
+   perfect:{dress:'mermaid-gown', hair:'silver-waves', shoes:'teal-sandals', acc:'necklace'}},
+  {id:'wicked',   name:'🟢 Wicked',       emoji:'🟢', kw:'green · black · witch · dark · magic',
+   tags:['wicked','witch','dark','magic','green','purple'],
+   perfect:{dress:'wicked', hair:'purple-bun', shoes:'black-boots', acc:'witchhat'}},
+  {id:'halloween',name:'🎃 Halloween',    emoji:'🎃', kw:'spooky · witch · black · dark · magic',
+   tags:['halloween','witch','dark','magic','black'],
+   perfect:{dress:'witch-robe', hair:'red-curly', shoes:'black-boots', acc:'witchhat'}},
+  {id:'night',    name:'🌙 Night Queen',  emoji:'🌙', kw:'dark · silver · stars · midnight · elegant',
+   tags:['night','dark','stars','elegant','midnight','silver'],
+   perfect:{dress:'night-dress', hair:'silver-waves', shoes:'silver-heels', acc:'stars'}},
+  {id:'garden',   name:'🌺 Garden Party', emoji:'🌺', kw:'flowers · pastel · spring · soft · floral',
+   tags:['garden','garden','spring','pink','floral','flower'],
+   perfect:{dress:'flower-dress', hair:'braid-crown', shoes:'gold-sandals', acc:'flower'}},
+  {id:'candy',    name:'🍬 Candy Land',   emoji:'🍬', kw:'pink · sweet · rainbow · fun · bright',
+   tags:['candy','rainbow','fun','colorful','bright','sweet','pink'],
+   perfect:{dress:'candy', hair:'pink-pigtails', shoes:'rainbow-shoes', acc:'bow'}},
+  {id:'school',   name:'🏫 School Glam',  emoji:'🏫', kw:'cute · trendy · fun · chic · colourful',
+   tags:['school','casual','fun','cute','simple'],
+   perfect:{dress:'flower-dress', hair:'2-braids', shoes:'white-sneakers', acc:'glasses'}},
+  {id:'beach',    name:'🌊 Beach Goddess',emoji:'🌊', kw:'summer · tropical · sun · waves · bright',
+   tags:['mermaid','ocean','beach','summer','bright','teal','blue'],
+   perfect:{dress:'ocean', hair:'silver-waves', shoes:'teal-sandals', acc:'flower'}},
+];
+
+// ═══════════════════════════════════════════════════
+//  SCORING ENGINE
+// ═══════════════════════════════════════════════════
+function scoreOutfit(outfit, theme) {
+  let themeScore = 0, completeness = 0, bonusScore = 0;
+  const breakdown = {};
+  const themeTags = theme.tags;
+
+  function tagScore(item, label) {
+    if (!item) return 0;
+    const tags = item.tags || [];
+    let s = 0;
+    tags.forEach(t => { if (themeTags.includes(t)) s += 8; });
+    // Perfect match bonus
+    if (theme.perfect[label] === item.id) s += 25;
+    return Math.min(s, 45);
+  }
+
+  // Theme match per slot
+  const ds = tagScore(outfit.dress, 'dress');
+  const hs = tagScore(outfit.hair, 'hair');
+  const ss = tagScore(outfit.shoes, 'shoes');
+  let as = 0;
+  outfit.accs.forEach(a => { as += tagScore(a, 'acc'); });
+  as = Math.min(as, 40);
+  themeScore = ds + hs + ss + as;
+  breakdown.theme = themeScore;
+
+  // Completeness (25 pts max)
+  if (outfit.dress) completeness += 7;
+  if (outfit.hair && outfit.hair.id !== 'brunette-long') completeness += 6;
+  if (outfit.shoes) completeness += 6;
+  if (outfit.accs.length > 0) completeness += 4;
+  if (outfit.accs.length >= 2) completeness += 2;
+  breakdown.completeness = completeness;
+
+  // Rare combo bonus — unusual but fitting combos
+  bonusScore = 0;
+  if (outfit.dress && outfit.hair) {
+    const dc = outfit.dress.tags || [];
+    const hc = outfit.hair.tags || [];
+    const overlap = dc.filter(t => hc.includes(t) && themeTags.includes(t)).length;
+    if (overlap >= 2) bonusScore += 10;
+    if (overlap >= 3) bonusScore += 5;
+  }
+  if (outfit.shoes && outfit.dress) {
+    const sc = outfit.shoes.tags || [];
+    const dc = outfit.dress.tags || [];
+    const overlap = sc.filter(t => dc.includes(t) && themeTags.includes(t)).length;
+    if (overlap >= 2) bonusScore += 8;
+  }
+  breakdown.bonus = bonusScore;
+
+  const total = Math.min(themeScore + completeness + bonusScore, 100);
+  breakdown.total = total;
+  return breakdown;
+}
+
+function liveScore() {
+  const bd = scoreOutfit(myOutfit, currentTheme);
+  const el = document.getElementById('scorePrev');
+  const stars = bd.total >= 80 ? '🌟🌟🌟' : bd.total >= 60 ? '⭐⭐' : bd.total >= 30 ? '⭐' : '';
+  el.textContent = `${stars} Score: ${bd.total} pts — theme ${bd.theme} + complete ${bd.completeness} + bonus ${bd.bonus}`;
+  // Highlight theme-matching items in grid
+  highlightThemeItems();
+}
+
+function highlightThemeItems() {
+  document.querySelectorAll('.cc').forEach(el => {
+    el.classList.remove('theme-bonus');
+    const badge = el.querySelector('.pts-badge');
+    if (badge) badge.style.display = 'none';
+  });
+  const allItems = currentCat === 'dress' ? DRESSES : currentCat === 'hair' ? HAIRSTYLES : currentCat === 'shoes' ? SHOES : ACCESSORIES;
+  allItems.forEach((item, i) => {
+    const card = document.querySelectorAll('.cc')[i];
+    if (!card) return;
+    const tags = item.tags || [];
+    const overlap = tags.filter(t => currentTheme.tags.includes(t)).length;
+    if (overlap >= 2) {
+      card.classList.add('theme-bonus');
+      const badge = card.querySelector('.pts-badge');
+      if (badge) { badge.textContent = '+' + (overlap * 8) + ' pts'; badge.style.display = 'block'; }
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let myRole = null, roomCode = '', myName = 'Shelly', themName = 'Player 2';
+let currentTheme = THEMES[0], selectedThemeIdx = 0, currentCat = 'dress';
+let myOutfit    = {dress: null, hair: HAIRSTYLES[0], shoes: null, accs: []};
+let themOutfit  = {dress: null, hair: HAIRSTYLES[0], shoes: null, accs: []};
+let myScoreBD = null, themScoreBD = null;
+let timerInterval = null, timeLeft = 180;
+let peer = null, conn = null;
+let runwayQueue = []; // [{who, name, outfit}]
+
+// ═══════════════════════════════════════════════════
+//  NETWORKING
+// ═══════════════════════════════════════════════════
+function setConn(ok, msg) {
+  const el = document.getElementById('connBadge');
+  el.textContent = msg;
+  el.className = 'conn ' + (ok ? 'on' : msg.includes('Wait') || msg.includes('Connect') ? 'wait' : 'off');
+}
+function send(type, data = {}) {
+  if (conn && conn.open) conn.send({type, from: myRole, ...data});
+}
+function setupConn(c) {
+  conn = c;
+  conn.on('open', () => setConn(true, '🟢 Connected!'));
+  conn.on('data', d => handleMsg(d));
+  conn.on('close', () => setConn(false, '🔴 Disconnected'));
+  conn.on('error', () => setConn(false, '🔴 Error'));
+}
+function handleMsg(msg) {
+  if (msg.type === 'peerInfo') { themName = msg.name; }
+  if (msg.type === 'join') {
+    themName = msg.name;
+    myName = document.getElementById('createName').value || 'Shelly';
+    send('peerInfo', {name: myName});
+    showScreen('themeScreen');
+    buildThemeGrid();
+  }
+  if (msg.type === 'themeStart') {
+    currentTheme = THEMES[msg.idx];
+    selectedThemeIdx = msg.idx;
+    startDressing();
+  }
+  if (msg.type === 'outfitReady') {
+    themOutfit = msg.outfit;
+    if (myRole === 'host') checkBothReady();
+  }
+  if (msg.type === 'startRunway') {
+    runwayQueue = msg.queue;
+    playNextRunway();
+  }
+  if (msg.type === 'showResults') {
+    myScoreBD = msg.myScore;
+    themScoreBD = msg.themScore;
+    displayResults();
+  }
+  if (msg.type === 'playAgain') {
+    resetGame();
+    if (myRole === 'host') { showScreen('themeScreen'); buildThemeGrid(); }
+    else showScreen('waitScreen');
+  }
+}
+
+let hostReady = false, guestReady = false;
+function checkBothReady() {
+  if (!hostReady || !guestReady) return;
+  // Both ready — calculate scores and start runway
+  myScoreBD   = scoreOutfit(myOutfit, currentTheme);
+  themScoreBD = scoreOutfit(themOutfit, currentTheme);
+  const queue = [
+    {who: 'p1', name: myName,   outfit: myOutfit},
+    {who: 'p2', name: themName, outfit: themOutfit},
+  ];
+  send('startRunway', {queue});
+  runwayQueue = [...queue];
+  playNextRunway();
+}
+
+// ═══════════════════════════════════════════════════
+//  SCREENS
+// ═══════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goHome() { stopTimer(); showScreen('homeScreen'); }
+function goCreate() {
+  roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+  document.getElementById('roomCodeDisplay').textContent = roomCode;
+  myRole = 'host';
+  initHost(roomCode);
+  showScreen('createScreen');
+}
+function goJoin() { myRole = 'guest'; showScreen('joinScreen'); }
+function doJoin() {
+  const code = document.getElementById('joinCode').value.trim().toUpperCase();
+  if (code.length < 3) { document.getElementById('joinMsg').textContent = 'Enter a valid code!'; return; }
+  roomCode = code;
+  myName = document.getElementById('joinName').value || 'Dad';
+  initGuest(roomCode);
+}
+function goSolo() {
+  myRole = 'solo'; myName = 'Shelly'; themName = 'Player 2';
+  setConn(true, '🟢 Solo Mode');
+  showScreen('themeScreen');
+  buildThemeGrid();
+}
+function copyCode() {
+  navigator.clipboard.writeText(roomCode).catch(() => {});
+  event.target.textContent = '✅ Copied!';
+  setTimeout(() => event.target.textContent = '📋 Copy Code', 2000);
+}
+
+function initHost(code) {
+  if (peer) peer.destroy();
+  peer = new Peer('sb-' + code);
+  peer.on('open', () => setConn(false, '⏳ Waiting…'));
+  peer.on('connection', c => { setupConn(c); });
+  peer.on('error', e => {
+    if (e.type === 'unavailable-id') {
+      const id2 = 'sb-' + code + '-' + Math.random().toString(36).substring(2, 4);
+      roomCode = id2.replace('sb-', '');
+      document.getElementById('roomCodeDisplay').textContent = roomCode;
+      peer = new Peer(id2);
+      peer.on('open', () => setConn(false, '⏳ Waiting…'));
+      peer.on('connection', c => setupConn(c));
+    }
+  });
+}
+function initGuest(code) {
+  if (peer) peer.destroy();
+  peer = new Peer();
+  peer.on('open', () => {
+    setConn(false, '🔗 Connecting…');
+    const c = peer.connect('sb-' + code, {reliable: true});
+    setupConn(c);
+    let tries = 0;
+    const poll = setInterval(() => {
+      tries++;
+      if (conn && conn.open) {
+        clearInterval(poll);
+        send('join', {name: myName});
+        document.getElementById('joinMsg').textContent = '✅ Connected! Waiting for theme…';
+        document.getElementById('joinMsg').style.color = '#15803d';
+        showScreen('waitScreen');
+      } else if (tries > 15) {
+        clearInterval(poll);
+        document.getElementById('joinMsg').textContent = '❌ Could not connect. Check the code!';
+        document.getElementById('joinMsg').style.color = '#b91c1c';
+      }
+    }, 600);
+  });
+  peer.on('error', () => {
+    document.getElementById('joinMsg').textContent = '❌ Could not connect!';
+    document.getElementById('joinMsg').style.color = '#b91c1c';
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  THEME SELECT
+// ═══════════════════════════════════════════════════
+function buildThemeGrid() {
+  const grid = document.getElementById('themeGrid');
+  grid.innerHTML = '';
+  THEMES.forEach((t, i) => {
+    const div = document.createElement('div');
+    div.className = 'theme-card' + (i === selectedThemeIdx ? ' sel' : '');
+    div.innerHTML = `<div class="te">${t.emoji}</div><div class="tn">${t.name}</div><div class="tk">${t.kw}</div>`;
+    div.onclick = () => {
+      document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('sel'));
+      div.classList.add('sel');
+      selectedThemeIdx = i;
+    };
+    grid.appendChild(div);
+  });
+}
+function startWithTheme() {
+  currentTheme = THEMES[selectedThemeIdx];
+  send('themeStart', {idx: selectedThemeIdx});
+  startDressing();
+}
+function startDressing() {
+  showScreen('dressScreen');
+  document.getElementById('dressThemeName').textContent = currentTheme.name;
+  buildChoices('dress');
+  showCatTab('dress');
+  startTimer();
+  showPhase(currentTheme.emoji, currentTheme.name, currentTheme.kw);
+  liveScore();
+}
+
+// ═══════════════════════════════════════════════════
+//  CHOICES
+// ═══════════════════════════════════════════════════
+function showCat(cat, tabEl) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  if (tabEl) tabEl.classList.add('active');
+  buildChoices(cat);
+}
+function showCatTab(cat) {
+  document.querySelectorAll('.cat-tab').forEach((t, i) => {
+    t.classList.toggle('active', ['dress','hair','shoes','acc'][i] === cat);
+  });
+}
+function buildChoices(cat) {
+  const grid = document.getElementById('choicesGrid');
+  grid.innerHTML = '';
+  const items = cat==='dress' ? DRESSES : cat==='hair' ? HAIRSTYLES : cat==='shoes' ? SHOES : ACCESSORIES;
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'cc';
+    let sel = false;
+    if (cat==='dress')  sel = myOutfit.dress?.id === item.id;
+    if (cat==='hair')   sel = myOutfit.hair?.id  === item.id;
+    if (cat==='shoes')  sel = myOutfit.shoes?.id === item.id;
+    if (cat==='acc')    sel = myOutfit.accs.some(a => a.id === item.id);
+    if (sel) div.classList.add('sel');
+    const colorDot = item.color && item.color !== 'rainbow'
+      ? `<div class="cd" style="background:${item.color}"></div>`
+      : item.color === 'rainbow' ? `<div class="cd" style="background:linear-gradient(135deg,#f87171,#facc15,#4ade80,#c084fc)"></div>` : '';
+    div.innerHTML = `<span class="pts-badge"></span><div class="ce">${item.emoji}</div><div class="cn">${item.name}</div>${colorDot}`;
+    div.onclick = () => pickItem(cat, item, div);
+    grid.appendChild(div);
+  });
+  highlightThemeItems();
+}
+function pickItem(cat, item, div) {
+  if (cat === 'acc') {
+    if (myOutfit.accs.some(a => a.id === item.id)) {
+      myOutfit.accs = myOutfit.accs.filter(a => a.id !== item.id);
+      div.classList.remove('sel');
+      document.getElementById('dHA').innerHTML = '';
+      document.getElementById('dAC').innerHTML = '';
+      myOutfit.accs.forEach(a => renderAcc(a, 'd'));
+    } else {
+      myOutfit.accs.push(item);
+      div.classList.add('sel');
+      renderAcc(item, 'd');
+    }
+  } else {
+    if (cat === 'dress')  { myOutfit.dress = item;  renderDress(item, 'd'); }
+    if (cat === 'hair')   { myOutfit.hair  = item;  renderHair(item, 'd');  }
+    if (cat === 'shoes')  { myOutfit.shoes = item;  renderShoes(item, 'd'); }
+    document.querySelectorAll('.cc').forEach(c => c.classList.remove('sel'));
+    div.classList.add('sel');
+  }
+  liveScore();
+}
+
+// ═══════════════════════════════════════════════════
+//  RENDER CHARACTER
+// ═══════════════════════════════════════════════════
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+function f(color, px) { return color === 'rainbow' ? `url(#${px}Rainbow)` : color; }
+function shade(hex, n) {
+  if (!hex || hex === 'rainbow' || hex.startsWith('rgba') || hex.startsWith('url')) return hex;
+  let r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  r=Math.max(0,Math.min(255,r+n)); g=Math.max(0,Math.min(255,g+n)); b=Math.max(0,Math.min(255,b+n));
+  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+function renderDress(item, px) {
+  document.getElementById(px+'Skirt').setAttribute('fill', f(item.color, px));
+  document.getElementById(px+'Skirt').setAttribute('d', item.skirt);
+  document.getElementById(px+'Torso').setAttribute('fill', f(item.topColor, px));
+  document.getElementById(px+'Collar').setAttribute('stroke', shade(item.topColor, -20));
+  // flowers
+  const ac = document.getElementById(px+'AC');
+  ac.querySelectorAll('.df').forEach(e => e.remove());
+  if (item.flowers) {
+    [[68,220],[100,240],[130,215],[85,250]].forEach(([cx,cy]) => {
+      const g2 = svgEl('g', {class:'df'});
+      ['#FF85A1','#FFB3C8','#FF6B9D'].forEach((c,i) => {
+        const a = i*120*Math.PI/180;
+        g2.appendChild(svgEl('ellipse', {cx:cx+Math.cos(a)*6, cy:cy+Math.sin(a)*6, rx:'5', ry:'3', fill:c, transform:`rotate(${i*120},${cx},${cy})`}));
+      });
+      g2.appendChild(svgEl('circle', {cx, cy, r:'4', fill:'#FFD700'}));
+      ac.appendChild(g2);
+    });
+  }
+}
+
+function renderHair(item, px) {
+  const c = item.color, fi = f(c, px);
+  const hb=document.getElementById(px+'HB'), hf=document.getElementById(px+'HF'), hl=document.getElementById(px+'HL'), he=document.getElementById(px+'HE');
+  hb.setAttribute('fill',fi); hf.setAttribute('fill',fi); hl.setAttribute('fill',fi);
+  he.innerHTML = '';
+  const add = (tag, attrs) => { const el=svgEl(tag,attrs); he.appendChild(el); return el; };
+  const sh = shade(c, -30), style = item.style;
+  if(style==='long'){hb.setAttribute('rx','44');hb.setAttribute('ry','72');hb.setAttribute('cy','84');hf.setAttribute('cx','90');hf.setAttribute('cy','54');hf.setAttribute('rx','42');hf.setAttribute('ry','22');hl.setAttribute('d','M52 62 Q72 44 90 42 Q108 44 128 62');}
+  else if(style==='short'){hb.setAttribute('rx','44');hb.setAttribute('ry','40');hb.setAttribute('cy','76');hf.setAttribute('cx','90');hf.setAttribute('cy','54');hf.setAttribute('rx','40');hf.setAttribute('ry','18');hl.setAttribute('d','M54 62 Q72 46 90 44 Q108 46 126 62');}
+  else if(style==='braids'){hb.setAttribute('rx','44');hb.setAttribute('ry','48');hb.setAttribute('cy','78');hf.setAttribute('cx','90');hf.setAttribute('cy','56');hf.setAttribute('rx','42');hf.setAttribute('ry','24');hl.setAttribute('d','M52 64 Q72 46 90 44 Q108 46 128 64');[[68,110],[112,110]].forEach(([bx,by])=>{for(let i=0;i<7;i++)add('ellipse',{cx:bx,cy:by+i*14,rx:'8',ry:'7',fill:fi,stroke:sh,'stroke-width':'1.5'});});}
+  else if(style==='braidcrown'){hb.setAttribute('rx','44');hb.setAttribute('ry','48');hb.setAttribute('cy','78');hf.setAttribute('cx','90');hf.setAttribute('cy','56');hf.setAttribute('rx','42');hf.setAttribute('ry','24');hl.setAttribute('d','M52 64 Q72 46 90 44 Q108 46 128 64');add('path',{d:'M52 64 Q72 38 90 34 Q108 38 128 64',fill:'none',stroke:fi,'stroke-width':'14','stroke-linecap':'round'});add('path',{d:'M52 64 Q72 38 90 34 Q108 38 128 64',fill:'none',stroke:sh,'stroke-width':'3','stroke-linecap':'round','stroke-dasharray':'5,7'});}
+  else if(style==='ponytail'){hb.setAttribute('rx','44');hb.setAttribute('ry','48');hb.setAttribute('cy','78');hf.setAttribute('cx','90');hf.setAttribute('cy','56');hf.setAttribute('rx','42');hf.setAttribute('ry','22');hl.setAttribute('d','M52 62 Q72 44 90 42 Q108 44 128 62');add('path',{d:'M118 60 Q145 76 140 126 Q135 158 126 172 Q116 162 120 130 Q128 98 108 68 Z',fill:fi});add('ellipse',{cx:'124',cy:'62',rx:'7',ry:'7',fill:sh});}
+  else if(style==='pigtails'){hb.setAttribute('rx','44');hb.setAttribute('ry','48');hb.setAttribute('cy','78');hf.setAttribute('cx','90');hf.setAttribute('cy','56');hf.setAttribute('rx','42');hf.setAttribute('ry','22');hl.setAttribute('d','M52 62 Q72 44 90 42 Q108 44 128 62');add('path',{d:'M52 74 Q28 90 26 136 Q24 166 33 180 Q45 170 42 140 Q46 108 60 84 Z',fill:fi});add('path',{d:'M128 74 Q152 90 154 136 Q156 166 147 180 Q135 170 138 140 Q134 108 120 84 Z',fill:fi});}
+  else if(style==='curly'){hb.setAttribute('rx','50');hb.setAttribute('ry','56');hb.setAttribute('cy','80');hf.setAttribute('cx','90');hf.setAttribute('cy','56');hf.setAttribute('rx','48');hf.setAttribute('ry','26');hl.setAttribute('d','M48 66 Q70 46 90 44 Q110 46 132 66');[[52,92],[64,112],[78,122],[92,126],[106,122],[120,112],[128,92]].forEach(([cx,cy])=>add('circle',{cx,cy,r:'12',fill:fi}));}
+  else if(style==='bun'){hb.setAttribute('rx','44');hb.setAttribute('ry','46');hb.setAttribute('cy','80');hf.setAttribute('cx','90');hf.setAttribute('cy','58');hf.setAttribute('rx','42');hf.setAttribute('ry','20');hl.setAttribute('d','M52 64 Q72 48 90 46 Q108 48 128 64');add('circle',{cx:'90',cy:'42',r:'20',fill:fi,stroke:sh,'stroke-width':'2.5'});add('path',{d:'M82 40 Q90 33 98 40 Q96 46 90 48 Q84 46 82 40',fill:'none',stroke:sh,'stroke-width':'1.5'});}
+  else if(style==='waves'){hb.setAttribute('rx','44');hb.setAttribute('ry','68');hb.setAttribute('cy','82');hf.setAttribute('cx','90');hf.setAttribute('cy','56');hf.setAttribute('rx','42');hf.setAttribute('ry','24');hl.setAttribute('d','M52 64 Q72 46 90 44 Q108 46 128 64');[[48,88],[132,88]].forEach(([sx,sy],i)=>{const ox=i===0?12:-12;add('path',{d:`M${sx} ${sy} Q${sx+ox} ${sy+16} ${sx} ${sy+32} Q${sx-ox} ${sy+48} ${sx} ${sy+64} Q${sx+ox} ${sy+80} ${sx} ${sy+96}`,stroke:fi,'stroke-width':'16',fill:'none','stroke-linecap':'round'});});}
+  else if(style==='pixie'){hb.setAttribute('rx','44');hb.setAttribute('ry','36');hb.setAttribute('cy','76');hf.setAttribute('cx','90');hf.setAttribute('cy','54');hf.setAttribute('rx','42');hf.setAttribute('ry','18');hl.setAttribute('d','M54 60 Q72 46 90 44 Q108 46 126 60');}
+  else{hb.setAttribute('rx','44');hb.setAttribute('ry','48');hb.setAttribute('cy','78');hf.setAttribute('cx','90');hf.setAttribute('cy','56');hf.setAttribute('rx','42');hf.setAttribute('ry','24');hl.setAttribute('d','M52 64 Q72 46 90 44 Q108 46 128 64');}
+}
+
+function renderShoes(item, px) {
+  const sl=document.getElementById(px+'SL'), sr=document.getElementById(px+'SR');
+  sl.setAttribute('fill', item.color); sr.setAttribute('fill', item.color);
+  if(item.style==='boots'){sl.setAttribute('ry','11');sl.setAttribute('cy','298');sr.setAttribute('ry','11');sr.setAttribute('cy','298');}
+  else if(item.style==='heels'){sl.setAttribute('ry','7');sl.setAttribute('cy','302');sr.setAttribute('ry','7');sr.setAttribute('cy','302');}
+  else{sl.setAttribute('ry','8');sl.setAttribute('cy','302');sr.setAttribute('ry','8');sr.setAttribute('cy','302');}
+}
+
+function renderAcc(item, px) {
+  const ha=document.getElementById(px+'HA'), ac=document.getElementById(px+'AC');
+  const add=(par,tag,attrs)=>{const el=svgEl(tag,attrs);par.appendChild(el);return el;};
+  const t=item.id;
+  if(t==='crown'){add(ha,'path',{d:'M58 42 L65 24 L75 38 L90 18 L105 38 L115 24 L122 42 Z',fill:'#FFD700',stroke:'#F59E0B','stroke-width':'2'});['#FF85A1','#9333ea','#3b82f6'].forEach((c,i)=>add(ha,'circle',{cx:68+i*16,cy:34,r:'3.5',fill:c}));}
+  else if(t==='tiara'){add(ha,'path',{d:'M54 52 Q64 36 78 44 Q90 30 102 44 Q116 36 126 52',stroke:'#FFD700','stroke-width':'4',fill:'none','stroke-linecap':'round'});add(ha,'circle',{cx:'90',cy:'32',r:'5',fill:'#FF85A1'});}
+  else if(t==='flower'){const cx=124,cy=48;['#FF85A1','#FFB3C8','#FF6B9D','#FFD6E0','#FF85A1'].forEach((c,i)=>{const a=i*72*Math.PI/180;add(ha,'ellipse',{cx:cx+Math.cos(a)*8,cy:cy+Math.sin(a)*8,rx:'6',ry:'4',fill:c,transform:`rotate(${i*72},${cx},${cy})`});});add(ha,'circle',{cx,cy,r:'5',fill:'#FFD700'});}
+  else if(t==='bow'){add(ha,'path',{d:'M70 38 Q56 28 58 40 Q60 52 70 46 Q80 52 82 40 Q84 28 70 38 Z',fill:'#FF85A1',stroke:'#E8547A','stroke-width':'1.5'});add(ha,'circle',{cx:'70',cy:'42',r:'4',fill:'#E8547A'});}
+  else if(t==='stars'){[[60,38],[122,42]].forEach(([cx,cy])=>{const pts=[];for(let i=0;i<10;i++){const a=(i*36-90)*Math.PI/180,r=i%2===0?9:4.5;pts.push(`${cx+r*Math.cos(a)},${cy+r*Math.sin(a)}`);}add(ha,'polygon',{points:pts.join(' '),fill:'#FFD700'});});}
+  else if(t==='necklace'){add(ac,'path',{d:'M60 120 Q90 132 120 120',stroke:'#FFD700','stroke-width':'2.5',fill:'none','stroke-linecap':'round'});add(ac,'polygon',{points:'90,128 94,136 90,144 86,136',fill:'#FF85A1'});}
+  else if(t==='earrings'){[52,128].forEach(cx=>{add(ac,'circle',{cx,cy:'88',r:'4',fill:'#FFD700'});add(ac,'circle',{cx,cy:'98',r:'5',fill:'#FF85A1'});});}
+  else if(t==='glasses'){add(ac,'path',{d:'M60 78 Q68 71 78 78 Q82 82 86 78 Q94 71 104 78 Q106 84 100 87 Q94 90 86 87 Q82 89 78 87 Q68 90 62 87 Q58 84 60 78 Z',fill:'none',stroke:'#9333ea','stroke-width':'2.5'});add(ac,'line',{x1:'78',y1:'80',x2:'86',y2:'80',stroke:'#9333ea','stroke-width':'2'});}
+  else if(t==='wings'){add(ac,'path',{d:'M46 132 Q16 108 14 148 Q12 188 44 176 Q38 158 46 142 Z',fill:'rgba(200,230,255,0.7)',stroke:'#c4b5fd','stroke-width':'2'});add(ac,'path',{d:'M46 150 Q18 142 18 168 Q18 194 46 186 Z',fill:'rgba(200,230,255,0.5)',stroke:'#c4b5fd','stroke-width':'1.5'});add(ac,'path',{d:'M134 132 Q164 108 166 148 Q168 188 136 176 Q142 158 134 142 Z',fill:'rgba(200,230,255,0.7)',stroke:'#c4b5fd','stroke-width':'2'});add(ac,'path',{d:'M134 150 Q162 142 162 168 Q162 194 134 186 Z',fill:'rgba(200,230,255,0.5)',stroke:'#c4b5fd','stroke-width':'1.5'});}
+  else if(t==='wand'){add(ac,'line',{x1:'132',y1:'170',x2:'150',y2:'122',stroke:'#8B5A2B','stroke-width':'4','stroke-linecap':'round'});const pts=[];for(let i=0;i<10;i++){const a=(i*36-90)*Math.PI/180,r=i%2===0?11:5;pts.push(`${150+r*Math.cos(a)},${118+r*Math.sin(a)}`);}add(ac,'polygon',{points:pts.join(' '),fill:'#FFD700'});}
+  else if(t==='witchhat'){add(ha,'ellipse',{cx:'90',cy:'44',rx:'44',ry:'10',fill:'#1c1c1c'});add(ha,'path',{d:'M62 44 Q76 24 90 4 Q104 24 118 44 Z',fill:'#2d1b4e'});add(ha,'rect',{x:'62',y:'36',width:'56',height:'8',rx:'2',fill:'#c4b5fd'});}
+  else if(t==='scarf'){add(ac,'path',{d:'M62 108 Q90 120 118 108 Q122 118 118 124 Q90 136 62 124 Q58 118 62 108 Z',fill:'#c4b5fd',stroke:'#9333ea','stroke-width':'1.5'});add(ac,'path',{d:'M72 124 Q70 148 66 162',stroke:'#c4b5fd','stroke-width':'10',fill:'none','stroke-linecap':'round'});}
+  else if(t==='cape'){add(ac,'path',{d:'M58 120 Q20 160 26 230 Q58 250 90 252 Q122 250 154 230 Q160 160 122 120 Z',fill:'rgba(147,51,234,0.7)',stroke:'#7c3aed','stroke-width':'2'});}
+  else if(t==='hearts'){[[56,42],[124,46]].forEach(([cx,cy])=>add(ha,'path',{d:`M${cx} ${cy+4} Q${cx-7} ${cy-4} ${cx} ${cy+1} Q${cx+7} ${cy-4} ${cx} ${cy+4} Z`,fill:'#FF85A1'}));}
+  else if(t==='hat'){add(ha,'ellipse',{cx:'90',cy:'42',rx:'46',ry:'10',fill:'#8B5A2B'});add(ha,'rect',{x:'60',y:'10',width:'60',height:'34',rx:'8',fill:'#6B3A1F'});add(ha,'rect',{x:'60',y:'38',width:'60',height:'8',fill:'#FF85A1'});}
+}
+
+// Clone dressSvg content into another SVG element
+function cloneOutfitToSvg(targetId, outfit) {
+  const src = document.getElementById('dressSvg');
+  const tgt = document.getElementById(targetId);
+  tgt.innerHTML = src.innerHTML;
+  // Re-apply outfit on top of clone
+  if (outfit.dress)  {
+    tgt.querySelector('[id$="Skirt"]')?.setAttribute('fill', f(outfit.dress.color, 'd'));
+    tgt.querySelector('[id$="Skirt"]')?.setAttribute('d', outfit.dress.skirt);
+    tgt.querySelector('[id$="Torso"]')?.setAttribute('fill', f(outfit.dress.topColor, 'd'));
+  }
+  if (outfit.shoes) {
+    ['SL','SR'].forEach(s => {
+      const el = [...tgt.querySelectorAll('ellipse')].find(e => e.id && e.id.endsWith(s));
+      if (el) el.setAttribute('fill', outfit.shoes.color);
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  READY & RUNWAY
+// ═══════════════════════════════════════════════════
+function goReady() {
+  stopTimer();
+  if (myRole === 'solo') {
+    myScoreBD = scoreOutfit(myOutfit, currentTheme);
+    themScoreBD = {theme:0, completeness:0, bonus:0, total:0};
+    const queue = [{who:'p1', name:myName, outfit:myOutfit}];
+    runwayQueue = [...queue];
+    playNextRunway();
+    return;
+  }
+  send('outfitReady', {outfit: myOutfit});
+  if (myRole === 'host') {
+    hostReady = true;
+    checkBothReady();
+  } else {
+    guestReady = true;
+    showScreen('waitScreen');
+    document.querySelector('#waitScreen h2').innerHTML = 'Waiting for results<span class="dots"><span>.</span><span>.</span><span>.</span></span>';
+  }
+}
+
+let runwayIdx = 0;
+function playNextRunway() {
+  if (runwayIdx >= runwayQueue.length) {
+    runwayIdx = 0;
+    // All done — show results
+    if (myRole === 'host' || myRole === 'solo') {
+      send('showResults', {myScore: myScoreBD, themScore: themScoreBD});
+    }
+    displayResults();
+    return;
+  }
+  const entry = runwayQueue[runwayIdx++];
+  showRunway(entry.name, entry.outfit, () => playNextRunway());
+}
+
+function showRunway(name, outfit, onDone) {
+  showScreen('runwayScreen');
+  document.getElementById('rwName').textContent = name + "'s Look ✨";
+  document.getElementById('rwMsg').textContent = '🎵 Walking the runway…';
+
+  // Rebuild runway SVG char by cloning dressSvg
+  // First apply current outfit to dressSvg, then clone
+  if (outfit.dress)  renderDress(outfit.dress, 'd');
+  if (outfit.hair)   renderHair(outfit.hair, 'd');
+  if (outfit.shoes)  renderShoes(outfit.shoes, 'd');
+  document.getElementById('dHA').innerHTML = '';
+  document.getElementById('dAC').innerHTML = '';
+  (outfit.accs || []).forEach(a => renderAcc(a, 'd'));
+
+  const src = document.getElementById('dressSvg');
+  const rw  = document.getElementById('rwSvg');
+  rw.innerHTML = src.innerHTML;
+
+  // Restart animation by replacing node
+  const old = document.getElementById('rwChar');
+  const clone = old.cloneNode(true);
+  old.parentNode.replaceChild(clone, old);
+
+  // After 4s show score then move on
+  setTimeout(() => {
+    const bd = scoreOutfit(outfit, currentTheme);
+    document.getElementById('rwMsg').textContent = `⭐ Score: ${bd.total} pts — theme match ${bd.theme} + outfit ${bd.completeness} + bonus ${bd.bonus}`;
+    setTimeout(onDone, 2200);
+  }, 3800);
+}
+
+// ═══════════════════════════════════════════════════
+//  RESULTS
+// ═══════════════════════════════════════════════════
+function displayResults() {
+  showScreen('resultsScreen');
+  const s1 = myScoreBD?.total ?? 0;
+  const s2 = themScoreBD?.total ?? 0;
+  const n1 = myRole === 'guest' ? themName : myName;
+  const n2 = myRole === 'guest' ? myName   : themName;
+  const bd1 = myRole === 'guest' ? themScoreBD : myScoreBD;
+  const bd2 = myRole === 'guest' ? myScoreBD   : themScoreBD;
+
+  document.getElementById('resN1').textContent    = n1;
+  document.getElementById('resN2').textContent    = n2;
+  document.getElementById('resScore1').textContent = s1;
+  document.getElementById('resScore2').textContent = s2;
+  document.getElementById('resBrk1').textContent  = `🎯${bd1?.theme??0} ✅${bd1?.completeness??0} 💎${bd1?.bonus??0}`;
+  document.getElementById('resBrk2').textContent  = `🎯${bd2?.theme??0} ✅${bd2?.completeness??0} 💎${bd2?.bonus??0}`;
+
+  let winner, trophy;
+  if (s1 > s2)      { winner = n1; trophy = '🏆'; }
+  else if (s2 > s1) { winner = n2; trophy = '🏆'; }
+  else              { winner = 'Tie!'; trophy = '🤝'; }
+
+  document.getElementById('resTrophy').textContent = trophy;
+  document.getElementById('resTitle').textContent  = winner === 'Tie!' ? "It's a Tie!" : `${winner} Wins!`;
+  document.getElementById('resWinner').textContent = winner === 'Tie!' ? '👯 Both are Style Queens!' : `🎉 Style Queen: ${winner}!`;
+
+  document.getElementById('scoreBreakdown').innerHTML = `
+    <div class="sbr"><span>🎯 Theme match</span><span class="val">${n1}: ${bd1?.theme??0} · ${n2}: ${bd2?.theme??0}</span></div>
+    <div class="sbr"><span>✅ Completeness</span><span class="val">${n1}: ${bd1?.completeness??0} · ${n2}: ${bd2?.completeness??0}</span></div>
+    <div class="sbr"><span>💎 Rare combo bonus</span><span class="val">${n1}: ${bd1?.bonus??0} · ${n2}: ${bd2?.bonus??0}</span></div>
+    <div class="sbr" style="border-top:1px solid rgba(255,255,255,.1);margin-top:.3rem;padding-top:.3rem"><span style="color:white;font-weight:900">Total</span><span class="val" style="font-size:.9rem;font-weight:900">${n1}: ${s1} · ${n2}: ${s2}</span></div>`;
+  document.getElementById('resReason').textContent = winner === 'Tie!' ? `Both scored ${s1} pts — incredible!` :
+    `${winner} matched the ${currentTheme.name} theme better with ${Math.max(s1,s2)} pts!`;
+
+  if (winner !== 'Tie!') confetti(60);
+}
+
+// ═══════════════════════════════════════════════════
+//  PLAY AGAIN
+// ═══════════════════════════════════════════════════
+function playAgain() {
+  resetGame();
+  send('playAgain');
+  if (myRole === 'host' || myRole === 'solo') {
+    showScreen('themeScreen');
+    buildThemeGrid();
+  } else {
+    showScreen('waitScreen');
+  }
+}
+function resetGame() {
+  myOutfit   = {dress: null, hair: HAIRSTYLES[0], shoes: null, accs: []};
+  themOutfit = {dress: null, hair: HAIRSTYLES[0], shoes: null, accs: []};
+  myScoreBD = null; themScoreBD = null;
+  hostReady = false; guestReady = false;
+  runwayIdx = 0; runwayQueue = [];
+  // Reset SVG
+  ['dHE','dAC','dHA'].forEach(id => document.getElementById(id).innerHTML = '');
+  document.getElementById('dSkirt').setAttribute('fill', '#FFB3C8');
+  document.getElementById('dSkirt').setAttribute('d', 'M54 176 Q50 200 42 248 Q66 260 90 262 Q114 260 138 248 Q130 200 126 176 Z');
+  document.getElementById('dTorso').setAttribute('fill', '#FFB3C8');
+  ['dHB','dHF'].forEach(id => document.getElementById(id).setAttribute('fill','#8B5A2B'));
+  document.getElementById('dHL').setAttribute('fill','#8B5A2B');
+  document.getElementById('dHB').setAttribute('rx','44'); document.getElementById('dHB').setAttribute('ry','48'); document.getElementById('dHB').setAttribute('cy','78');
+  document.getElementById('dSL').setAttribute('fill','#E8547A'); document.getElementById('dSR').setAttribute('fill','#E8547A');
+  document.getElementById('dSL').setAttribute('ry','8'); document.getElementById('dSL').setAttribute('cy','302');
+  document.getElementById('dSR').setAttribute('ry','8'); document.getElementById('dSR').setAttribute('cy','302');
+}
+
+// ═══════════════════════════════════════════════════
+//  TIMER
+// ═══════════════════════════════════════════════════
+function startTimer() {
+  stopTimer(); timeLeft = 180; updateTimer();
+  timerInterval = setInterval(() => { timeLeft--; updateTimer(); if (timeLeft <= 0) { stopTimer(); goReady(); } }, 1000);
+}
+function stopTimer() { clearInterval(timerInterval); timerInterval = null; }
+function updateTimer() {
+  const m = Math.floor(timeLeft/60), s = String(timeLeft%60).padStart(2,'0');
+  const box = document.getElementById('timerBox');
+  box.textContent = m+':'+s;
+  box.className = 'timer-box' + (timeLeft <= 30 ? ' red' : '');
+}
+
+// ═══════════════════════════════════════════════════
+//  PHASE ANNOUNCE
+// ═══════════════════════════════════════════════════
+function showPhase(emoji, name, sub) {
+  const ps = document.getElementById('phaseScreen');
+  document.getElementById('phaseEmoji').textContent = emoji;
+  document.getElementById('phaseBig').textContent = name;
+  document.getElementById('phaseSub').textContent = sub || '';
+  ps.classList.add('show');
+  setTimeout(() => ps.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════════════════
+//  CONFETTI
+// ═══════════════════════════════════════════════════
+function confetti(n) {
+  const cols = ['#FF85A1','#FFD700','#c4b5fd','#6ee7b7','#fb923c','#f472b6','#60a5fa'];
+  for (let i=0; i<n; i++) {
+    const c = document.createElement('div');
+    c.className = 'cf';
+    c.style.left = Math.random()*100+'vw'; c.style.top = '-20px';
+    c.style.background = cols[Math.floor(Math.random()*cols.length)];
+    c.style.animationDelay = Math.random()*.8+'s';
+    c.style.width = (7+Math.random()*9)+'px'; c.style.height = (7+Math.random()*9)+'px';
+    c.style.borderRadius = Math.random()>.5?'50%':'3px';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2800);
+  }
+}
+
+// init
+buildThemeGrid();
+</script>
+
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+</body>
+</html>
