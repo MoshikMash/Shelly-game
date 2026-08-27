@@ -4,13 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>👑 Princess Reading Castle</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Andika:wght@400;700&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
   --pink:#f472b6;--pink-d:#ec4899;--purple:#a78bfa;--purple-d:#8b5cf6;
   --gold:#fbbf24;--gold-d:#f59e0b;--mint:#34d399;--mint-d:#059669;
   --sky:#60a5fa;--text:#2d1b4e;--soft:#9d7ec0;--bg:#fdf4ff;--card:#ffffff;
+  /* Clear schoolbook letterforms for everything a child reads (Andika is designed for beginning readers) */
+  --read-font:'Andika','Comic Sans MS','Segoe UI',sans-serif;
 }
 html,body{height:100%;}
 body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;
@@ -75,7 +77,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   text-align:center;cursor:pointer;transition:transform .15s;box-shadow:0 4px 12px rgba(0,0,0,.07);}
 .letter-card:hover{transform:translateY(-3px);}
 .letter-card:active{transform:scale(.95);}
-.letter-card .lc{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--purple-d);line-height:1.1;}
+.letter-card .lc{font-family:var(--read-font);font-weight:700;font-size:2rem;color:var(--purple-d);line-height:1.1;}
 .letter-card .le{font-size:1.5rem;}
 .letter-card .lw{font-weight:800;font-size:.75rem;color:var(--soft);}
 .letter-card.done{border-color:var(--gold);}
@@ -90,13 +92,13 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 @keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
 .close-x{position:absolute;top:.7rem;right:.9rem;border:none;background:#f3e8ff;color:var(--soft);
   border-radius:50%;width:2rem;height:2rem;font-size:1rem;font-weight:900;cursor:pointer;}
-.big-letter{font-family:'Fredoka One',cursive;font-size:5rem;line-height:1;
+.big-letter{font-family:var(--read-font);font-weight:700;font-size:5rem;line-height:1;
   background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;
   -webkit-text-fill-color:transparent;background-clip:text;}
 .big-letter.bounce{animation:lb .45s ease;}
 @keyframes lb{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
 .big-emoji{font-size:3.2rem;margin:.3rem 0;}
-.anchor-word{font-weight:900;font-size:1.2rem;color:var(--text);margin-bottom:.8rem;}
+.anchor-word{font-family:var(--read-font);font-weight:700;font-size:1.35rem;color:var(--text);margin-bottom:.8rem;}
 .sound-row{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;}
 .nav-row{display:flex;justify-content:space-between;margin-top:1rem;}
 
@@ -108,7 +110,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .word-emoji{font-size:4rem;line-height:1;margin-bottom:.6rem;min-height:4.4rem;transition:filter .3s;}
 .word-emoji.hidden-pic{filter:blur(14px);}
 .tiles{display:flex;gap:.55rem;justify-content:center;margin:.4rem 0 1rem;}
-.tile{font-family:'Fredoka One',cursive;font-size:2.6rem;color:white;border:none;cursor:pointer;
+.tile{font-family:var(--read-font);font-weight:700;font-size:2.6rem;color:white;border:none;cursor:pointer;
   background:linear-gradient(160deg,var(--purple),var(--purple-d));border-radius:1.1rem;
   width:4.4rem;height:4.9rem;box-shadow:0 5px 0 #6d28d9;transition:transform .1s;line-height:1;}
 .tile:active{transform:translateY(3px);box-shadow:0 2px 0 #6d28d9;}
@@ -123,14 +125,14 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 /* ============ FAMILIES ============ */
 .family-picker{display:flex;gap:.45rem;flex-wrap:wrap;justify-content:center;width:100%;max-width:560px;margin-bottom:.8rem;}
 .fam-chip{border:2.5px solid #e9d5ff;background:white;color:var(--purple-d);border-radius:16px;
-  padding:.45rem .9rem;font-family:'Fredoka One',cursive;font-size:1.05rem;cursor:pointer;transition:all .15s;}
+  padding:.45rem .9rem;font-family:var(--read-font);font-weight:700;font-size:1.05rem;cursor:pointer;transition:all .15s;}
 .fam-chip.active{background:var(--purple);border-color:var(--purple);color:white;}
 .family-stage{background:white;border-radius:2rem;padding:1.4rem 1rem;width:100%;max-width:560px;
   box-shadow:0 8px 26px rgba(0,0,0,.09);text-align:center;}
-.rime-display{font-family:'Fredoka One',cursive;font-size:2.4rem;color:var(--pink-d);margin-bottom:.8rem;}
+.rime-display{font-family:var(--read-font);font-weight:700;font-size:2.4rem;color:var(--pink-d);margin-bottom:.8rem;}
 .onset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;}
 .onset-btn{border:none;background:linear-gradient(160deg,#fce7f3,#fbcfe8);border-radius:1rem;cursor:pointer;
-  padding:.65rem .2rem;font-family:'Fredoka One',cursive;font-size:1.35rem;color:var(--text);
+  padding:.65rem .2rem;font-family:var(--read-font);font-weight:700;font-size:1.35rem;color:var(--text);
   box-shadow:0 3px 0 #f9a8d4;transition:transform .1s;}
 .onset-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #f9a8d4;}
 .onset-btn .oe{display:block;font-size:1.3rem;font-family:'Nunito',sans-serif;}
@@ -139,10 +141,10 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
 .quiz-card{background:white;border-radius:2rem;padding:1.6rem 1.2rem;width:100%;max-width:560px;
   text-align:center;box-shadow:0 8px 26px rgba(0,0,0,.09);}
 .quiz-question{font-weight:900;font-size:1.15rem;margin-bottom:1rem;color:var(--text);}
-.quiz-word{font-family:'Fredoka One',cursive;font-size:3rem;color:var(--purple-d);margin-bottom:.8rem;}
+.quiz-word{font-family:var(--read-font);font-weight:700;font-size:3rem;color:var(--purple-d);margin-bottom:.8rem;}
 .quiz-options{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;}
 .quiz-opt{border:3px solid #f3e8ff;background:#fdf4ff;border-radius:1.3rem;cursor:pointer;
-  padding:.9rem .4rem;font-family:'Fredoka One',cursive;font-size:2.4rem;color:var(--purple-d);
+  padding:.9rem .4rem;font-family:var(--read-font);font-weight:700;font-size:2.4rem;color:var(--purple-d);
   transition:transform .12s;line-height:1.15;}
 .quiz-opt:hover{transform:translateY(-2px);}
 .quiz-opt.correct{background:#dcfce7;border-color:var(--mint);animation:lb .45s ease;}
@@ -435,12 +437,15 @@ function pickVoice(){
 }
 if(synth){ pickVoice(); synth.onvoiceschanged = pickVoice; }
 
+let everSpoke = false, soundWarned = false;
 function speak(text, opts){
   opts = opts||{};
   return new Promise(resolve=>{
     if(!synth){ showMuteNote(); return resolve(); }
     try{
+      try{ synth.resume(); }catch(e){} // Chrome sometimes leaves the engine paused
       const u = new SpeechSynthesisUtterance(text);
+      if(!voice) pickVoice();
       if(voice) u.voice = voice;
       u.lang = (voice && voice.lang) || 'en-US';
       u.rate = opts.rate!=null ? opts.rate : 0.85;
@@ -448,17 +453,22 @@ function speak(text, opts){
       u.volume = 1;
       let done = false;
       const finish = ()=>{ if(!done){ done=true; resolve(); } };
+      u.onstart = ()=>{ everSpoke = true; };
       u.onend = finish; u.onerror = finish;
       setTimeout(finish, Math.max(2500, text.length*220)); // safety net
+      setTimeout(()=>{ if(!everSpoke) showMuteNote(); }, 1800);
       synth.speak(u);
     }catch(e){ resolve(); }
   });
 }
 function cancelSpeech(){ if(synth){ try{ synth.cancel(); }catch(e){} } }
 function showMuteNote(){
+  if(soundWarned) return;
+  soundWarned = true;
   const n = document.getElementById('muteNote');
+  n.textContent = '🔇 No sound? Open this page in Safari or Chrome, and check the mute switch & volume.';
   n.style.display = 'block';
-  setTimeout(()=>{ n.style.display='none'; }, 3000);
+  setTimeout(()=>{ n.style.display='none'; soundWarned = false; }, 6000);
 }
 const wait = ms => new Promise(r=>setTimeout(r, ms));
 
@@ -785,8 +795,9 @@ document.addEventListener('pointerdown', ()=>{
   if(primed || !synth) return;
   primed = true;
   try{
+    synth.resume();
     const u = new SpeechSynthesisUtterance(' ');
-    u.volume = 0; synth.speak(u);
+    u.volume = 0.01; synth.speak(u);
   }catch(e){}
 }, {once:false, capture:true});
 
