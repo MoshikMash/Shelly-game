@@ -501,17 +501,29 @@ function playClip(key){
 function ttsUsable(){
   return !!(synth && synth.getVoices && synth.getVoices().some(v=>/^en/i.test(v.lang)));
 }
-// Letter sounds, names and rimes: always the recorded clip (accurate phonics);
-// device voice only if the clip is missing.
+// Everything prefers the device voice (warmer, nicer); the recorded
+// clips only step in when the device has no speech voices at all.
 async function sayPhoneme(letter){
+  if(ttsUsable()){
+    await speak(LETTERS[letter].ph, {rate:0.6});
+    if(everSpoke) return;
+  }
   if(await playClip('p_'+letter)) return;
   await speak(LETTERS[letter].ph, {rate:0.6});
 }
 async function sayName(letter){
+  if(ttsUsable()){
+    await speak('The letter '+letter.toUpperCase()+'.', {rate:0.9});
+    if(everSpoke) return;
+  }
   if(await playClip('n_'+letter)) return;
   await speak('The letter '+letter.toUpperCase()+'.', {rate:0.9});
 }
 async function sayRime(rime){
+  if(ttsUsable()){
+    await speak(rime, {rate:0.7});
+    if(everSpoke) return;
+  }
   if(await playClip('w_'+rime)) return;
   await speak(rime, {rate:0.7});
 }
