@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>👑 Princess Reading Castle</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --pink:#f472b6;--pink-d:#ec4899;--purple:#a78bfa;--purple-d:#8b5cf6;
+  --gold:#fbbf24;--gold-d:#f59e0b;--mint:#34d399;--mint-d:#059669;
+  --sky:#60a5fa;--text:#2d1b4e;--soft:#9d7ec0;--bg:#fdf4ff;--card:#ffffff;
+}
+html,body{height:100%;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;
+  background-image:
+    radial-gradient(circle at 12% 15%,#fce7f3 0%,transparent 38%),
+    radial-gradient(circle at 88% 82%,#ede9fe 0%,transparent 38%),
+    radial-gradient(circle at 80% 10%,#fef3c7 0%,transparent 25%);}
+
+.screen{display:none;min-height:100vh;flex-direction:column;align-items:center;padding:1rem 1rem 3rem;}
+.screen.active{display:flex;}
+
+.logo{font-family:'Fredoka One',cursive;font-size:clamp(1.9rem,7vw,3rem);text-align:center;line-height:1.15;
+  background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;}
+.subtitle{color:var(--soft);font-weight:700;text-align:center;font-size:.95rem;}
+
+.btn{border:none;border-radius:16px;padding:.75rem 1.3rem;font-family:'Nunito',sans-serif;
+  font-weight:900;font-size:1.05rem;cursor:pointer;transition:transform .15s, box-shadow .15s;color:white;}
+.btn:hover{transform:translateY(-2px) scale(1.02);}
+.btn:active{transform:scale(.96);}
+.btn-pink{background:linear-gradient(135deg,var(--pink),var(--pink-d));box-shadow:0 5px 16px rgba(244,114,182,.4);}
+.btn-purple{background:linear-gradient(135deg,var(--purple),var(--purple-d));box-shadow:0 5px 16px rgba(167,139,250,.4);}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-d));color:#5b3a00;box-shadow:0 5px 16px rgba(251,191,36,.4);}
+.btn-mint{background:linear-gradient(135deg,var(--mint),var(--mint-d));box-shadow:0 5px 16px rgba(52,211,153,.4);}
+.btn-ghost{background:white;color:var(--soft);border:2.5px solid #e9d5ff;box-shadow:0 3px 10px rgba(0,0,0,.06);}
+
+/* top bar */
+.topbar{width:100%;max-width:560px;display:flex;align-items:center;gap:.5rem;margin-bottom:.7rem;}
+.back-btn{border:none;background:white;border-radius:14px;padding:.45rem .8rem;font-size:1.1rem;cursor:pointer;
+  box-shadow:0 3px 10px rgba(0,0,0,.08);font-weight:900;color:var(--soft);}
+.screen-title{flex:1;font-family:'Fredoka One',cursive;font-size:1.25rem;text-align:center;color:var(--purple-d);}
+.star-chip{background:white;border-radius:14px;padding:.4rem .7rem;font-weight:900;color:var(--gold-d);
+  box-shadow:0 3px 10px rgba(0,0,0,.08);font-size:.95rem;white-space:nowrap;}
+
+/* ============ HOME ============ */
+#homeScreen{justify-content:center;gap:.7rem;}
+.castle{font-size:4.2rem;text-align:center;animation:float 3.5s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.home-btn{border:none;border-radius:20px;padding:1rem 1.3rem;font-family:'Nunito',sans-serif;
+  font-weight:900;font-size:1.1rem;color:white;cursor:pointer;transition:transform .15s;
+  box-shadow:0 6px 20px rgba(0,0,0,.13);display:flex;align-items:center;gap:.7rem;
+  width:100%;max-width:320px;text-align:left;}
+.home-btn:hover{transform:translateY(-3px);}
+.home-btn:active{transform:scale(.97);}
+.home-btn .big{font-size:1.7rem;}
+.home-btn small{display:block;font-weight:700;font-size:.75rem;opacity:.9;}
+.treasure{background:white;border-radius:18px;padding:.6rem 1.2rem;box-shadow:0 4px 14px rgba(0,0,0,.08);
+  display:flex;gap:1.1rem;font-weight:900;font-size:1rem;color:var(--text);}
+.tiny-link{border:none;background:none;color:var(--soft);font-weight:800;font-size:.85rem;cursor:pointer;
+  text-decoration:underline;font-family:'Nunito',sans-serif;}
+
+/* ============ LETTERS ============ */
+.group-tabs{display:flex;gap:.4rem;width:100%;max-width:560px;margin-bottom:.7rem;overflow-x:auto;
+  padding-bottom:.2rem;scrollbar-width:none;}
+.group-tabs::-webkit-scrollbar{display:none;}
+.gtab{flex-shrink:0;border:2.5px solid #e9d5ff;background:white;color:var(--soft);border-radius:20px;
+  padding:.4rem .85rem;font-family:'Nunito',sans-serif;font-weight:900;font-size:.85rem;cursor:pointer;transition:all .15s;}
+.gtab.active{background:var(--pink);border-color:var(--pink);color:white;}
+.letters-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;width:100%;max-width:560px;}
+@media(min-width:480px){.letters-grid{grid-template-columns:repeat(4,1fr);}}
+.letter-card{background:white;border:3px solid #f3e8ff;border-radius:1.3rem;padding:.7rem .4rem .6rem;
+  text-align:center;cursor:pointer;transition:transform .15s;box-shadow:0 4px 12px rgba(0,0,0,.07);}
+.letter-card:hover{transform:translateY(-3px);}
+.letter-card:active{transform:scale(.95);}
+.letter-card .lc{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--purple-d);line-height:1.1;}
+.letter-card .le{font-size:1.5rem;}
+.letter-card .lw{font-weight:800;font-size:.75rem;color:var(--soft);}
+.letter-card.done{border-color:var(--gold);}
+.letter-card.done .lc{color:var(--gold-d);}
+
+/* letter modal */
+.overlay{position:fixed;inset:0;background:rgba(45,27,78,.45);display:none;align-items:center;
+  justify-content:center;z-index:50;padding:1rem;}
+.overlay.show{display:flex;}
+.letter-modal{background:white;border-radius:2rem;padding:1.6rem 1.4rem;width:100%;max-width:360px;
+  text-align:center;box-shadow:0 15px 50px rgba(0,0,0,.25);position:relative;animation:pop .25s ease;}
+@keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+.close-x{position:absolute;top:.7rem;right:.9rem;border:none;background:#f3e8ff;color:var(--soft);
+  border-radius:50%;width:2rem;height:2rem;font-size:1rem;font-weight:900;cursor:pointer;}
+.big-letter{font-family:'Fredoka One',cursive;font-size:5rem;line-height:1;
+  background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;}
+.big-letter.bounce{animation:lb .45s ease;}
+@keyframes lb{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+.big-emoji{font-size:3.2rem;margin:.3rem 0;}
+.anchor-word{font-weight:900;font-size:1.2rem;color:var(--text);margin-bottom:.8rem;}
+.sound-row{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;}
+.nav-row{display:flex;justify-content:space-between;margin-top:1rem;}
+
+/* ============ WORDS ============ */
+.level-tabs{display:flex;gap:.4rem;width:100%;max-width:560px;margin-bottom:.7rem;overflow-x:auto;scrollbar-width:none;}
+.level-tabs::-webkit-scrollbar{display:none;}
+.word-stage{background:white;border-radius:2rem;padding:1.5rem 1rem 1.3rem;width:100%;max-width:560px;
+  text-align:center;box-shadow:0 8px 26px rgba(0,0,0,.09);}
+.word-emoji{font-size:4rem;line-height:1;margin-bottom:.6rem;min-height:4.4rem;transition:filter .3s;}
+.word-emoji.hidden-pic{filter:blur(14px);}
+.tiles{display:flex;gap:.55rem;justify-content:center;margin:.4rem 0 1rem;}
+.tile{font-family:'Fredoka One',cursive;font-size:2.6rem;color:white;border:none;cursor:pointer;
+  background:linear-gradient(160deg,var(--purple),var(--purple-d));border-radius:1.1rem;
+  width:4.4rem;height:4.9rem;box-shadow:0 5px 0 #6d28d9;transition:transform .1s;line-height:1;}
+.tile:active{transform:translateY(3px);box-shadow:0 2px 0 #6d28d9;}
+.tile.vowel{background:linear-gradient(160deg,var(--pink),var(--pink-d));box-shadow:0 5px 0 #be185d;}
+.tile.vowel:active{box-shadow:0 2px 0 #be185d;}
+.tile.lit{transform:scale(1.14);filter:brightness(1.25);}
+.word-actions{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;}
+.word-progress{margin-top:.8rem;font-weight:800;color:var(--soft);font-size:.9rem;}
+.word-nav{display:flex;justify-content:space-between;width:100%;max-width:560px;margin-top:.8rem;}
+.hint-note{margin-top:.6rem;font-weight:700;color:var(--soft);font-size:.82rem;}
+
+/* ============ FAMILIES ============ */
+.family-picker{display:flex;gap:.45rem;flex-wrap:wrap;justify-content:center;width:100%;max-width:560px;margin-bottom:.8rem;}
+.fam-chip{border:2.5px solid #e9d5ff;background:white;color:var(--purple-d);border-radius:16px;
+  padding:.45rem .9rem;font-family:'Fredoka One',cursive;font-size:1.05rem;cursor:pointer;transition:all .15s;}
+.fam-chip.active{background:var(--purple);border-color:var(--purple);color:white;}
+.family-stage{background:white;border-radius:2rem;padding:1.4rem 1rem;width:100%;max-width:560px;
+  box-shadow:0 8px 26px rgba(0,0,0,.09);text-align:center;}
+.rime-display{font-family:'Fredoka One',cursive;font-size:2.4rem;color:var(--pink-d);margin-bottom:.8rem;}
+.onset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;}
+.onset-btn{border:none;background:linear-gradient(160deg,#fce7f3,#fbcfe8);border-radius:1rem;cursor:pointer;
+  padding:.65rem .2rem;font-family:'Fredoka One',cursive;font-size:1.35rem;color:var(--text);
+  box-shadow:0 3px 0 #f9a8d4;transition:transform .1s;}
+.onset-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #f9a8d4;}
+.onset-btn .oe{display:block;font-size:1.3rem;font-family:'Nunito',sans-serif;}
+
+/* ============ QUIZ ============ */
+.quiz-card{background:white;border-radius:2rem;padding:1.6rem 1.2rem;width:100%;max-width:560px;
+  text-align:center;box-shadow:0 8px 26px rgba(0,0,0,.09);}
+.quiz-question{font-weight:900;font-size:1.15rem;margin-bottom:1rem;color:var(--text);}
+.quiz-word{font-family:'Fredoka One',cursive;font-size:3rem;color:var(--purple-d);margin-bottom:.8rem;}
+.quiz-options{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;}
+.quiz-opt{border:3px solid #f3e8ff;background:#fdf4ff;border-radius:1.3rem;cursor:pointer;
+  padding:.9rem .4rem;font-family:'Fredoka One',cursive;font-size:2.4rem;color:var(--purple-d);
+  transition:transform .12s;line-height:1.15;}
+.quiz-opt:hover{transform:translateY(-2px);}
+.quiz-opt.correct{background:#dcfce7;border-color:var(--mint);animation:lb .45s ease;}
+.quiz-opt.wrong{background:#fee2e2;border-color:#f87171;animation:shake .35s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.gem-bar{margin-top:1rem;font-weight:900;color:var(--purple-d);font-size:1.05rem;}
+.quiz-mode-row{display:flex;gap:.5rem;justify-content:center;margin-bottom:.8rem;flex-wrap:wrap;}
+
+/* ============ CELEBRATION ============ */
+.celebrate{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  z-index:80;pointer-events:none;}
+.celebrate.show{display:flex;}
+.celebrate-inner{background:rgba(255,255,255,.96);border-radius:2rem;padding:1.6rem 2.2rem;text-align:center;
+  box-shadow:0 15px 50px rgba(0,0,0,.25);animation:pop .3s ease;}
+.celebrate-inner .ce{font-size:3.6rem;}
+.celebrate-inner .ct{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--pink-d);}
+.sparkle{position:fixed;font-size:1.5rem;z-index:79;pointer-events:none;animation:fall 1.6s ease-in forwards;}
+@keyframes fall{0%{transform:translateY(-10vh) rotate(0);opacity:1}100%{transform:translateY(70vh) rotate(300deg);opacity:0}}
+
+/* ============ PARENT GUIDE ============ */
+.guide-modal{background:white;border-radius:2rem;padding:1.6rem 1.4rem;width:100%;max-width:420px;
+  max-height:85vh;overflow-y:auto;box-shadow:0 15px 50px rgba(0,0,0,.25);position:relative;animation:pop .25s ease;}
+.guide-modal h2{font-family:'Fredoka One',cursive;color:var(--purple-d);font-size:1.35rem;margin-bottom:.7rem;}
+.guide-modal h3{color:var(--pink-d);font-size:1rem;margin:.9rem 0 .3rem;}
+.guide-modal p,.guide-modal li{font-size:.9rem;font-weight:600;line-height:1.5;color:var(--text);}
+.guide-modal ul{padding-left:1.2rem;}
+.mute-note{position:fixed;bottom:.6rem;left:50%;transform:translateX(-50%);background:#fef9c3;color:#92400e;
+  font-weight:800;font-size:.78rem;padding:.35rem .8rem;border-radius:12px;z-index:60;display:none;box-shadow:0 3px 10px rgba(0,0,0,.15);}
+</style>
+</head>
+<body>
+
+<!-- ============ HOME ============ -->
+<div class="screen active" id="homeScreen">
+  <div class="castle">🏰</div>
+  <div class="logo">Princess Reading<br>Castle 👑</div>
+  <p class="subtitle">Tap, listen &amp; learn to read! ✨</p>
+  <div class="treasure" style="margin:.5rem 0 .6rem">
+    <span>⭐ <span id="homeStars">0</span></span>
+    <span>💎 <span id="homeGems">0</span></span>
+    <span id="homeCrown">👑 <span id="homeCrowns">0</span></span>
+  </div>
+  <button class="home-btn btn-pink" onclick="goLetters()"><span class="big">🔤</span>
+    <span>Letter Sounds<small>Tap a letter, hear its sound</small></span></button>
+  <button class="home-btn btn-purple" onclick="goWords()"><span class="big">🧩</span>
+    <span>Sound It Out<small>Build &amp; read your first words</small></span></button>
+  <button class="home-btn btn-gold" onclick="goFamilies()"><span class="big">🎀</span>
+    <span>Word Families<small>Rhyming word magic</small></span></button>
+  <button class="home-btn btn-mint" onclick="goQuiz()"><span class="big">🦄</span>
+    <span>Princess Quiz<small>Win gems for reading!</small></span></button>
+  <button class="tiny-link" onclick="openGuide()">📖 Guide for grown-ups</button>
+  <a href="index.html" class="tiny-link" style="text-decoration:underline;">👗 Play Style Battle</a>
+</div>
+
+<!-- ============ LETTERS ============ -->
+<div class="screen" id="lettersScreen">
+  <div class="topbar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="screen-title">🔤 Letter Sounds</div>
+    <div class="star-chip">⭐ <span class="starCount">0</span></div>
+  </div>
+  <div class="group-tabs" id="groupTabs"></div>
+  <div class="letters-grid" id="lettersGrid"></div>
+  <p class="hint-note">💡 We learn letter <b>sounds</b> first — "sss", not "ess"!</p>
+</div>
+
+<!-- letter modal -->
+<div class="overlay" id="letterOverlay" onclick="if(event.target===this)closeLetter()">
+  <div class="letter-modal">
+    <button class="close-x" onclick="closeLetter()">✕</button>
+    <div class="big-letter" id="modalLetter">Ss</div>
+    <div class="big-emoji" id="modalEmoji">🐍</div>
+    <div class="anchor-word" id="modalWord">snake</div>
+    <div class="sound-row">
+      <button class="btn btn-pink" onclick="playLetterSound()">🔊 Sound</button>
+      <button class="btn btn-purple" onclick="playLetterName()">🏷️ Name</button>
+      <button class="btn btn-gold" onclick="playLetterWord()" id="modalWordBtn">🐍 Word</button>
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="prevLetter()">← Back</button>
+      <button class="btn btn-ghost" onclick="nextLetter()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ WORDS ============ -->
+<div class="screen" id="wordsScreen">
+  <div class="topbar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="screen-title">🧩 Sound It Out</div>
+    <div class="star-chip">⭐ <span class="starCount">0</span></div>
+  </div>
+  <div class="level-tabs" id="levelTabs"></div>
+  <div class="word-stage">
+    <div class="word-emoji" id="wordEmoji">🐱</div>
+    <div class="tiles" id="wordTiles"></div>
+    <div class="word-actions">
+      <button class="btn btn-purple" onclick="soundItOut()">🐢 Sound it out</button>
+      <button class="btn btn-pink" onclick="sayWholeWord()">🗣️ Hear the word</button>
+      <button class="btn btn-gold" onclick="readItMyself()">⭐ I read it!</button>
+    </div>
+    <div class="word-progress" id="wordProgress"></div>
+  </div>
+  <div class="word-nav">
+    <button class="btn btn-ghost" onclick="prevWord()">← Back</button>
+    <button class="btn btn-ghost" onclick="nextWord()">Next →</button>
+  </div>
+  <p class="hint-note">💡 Tap each tile to hear its sound, then blend them together!</p>
+</div>
+
+<!-- ============ FAMILIES ============ -->
+<div class="screen" id="familiesScreen">
+  <div class="topbar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="screen-title">🎀 Word Families</div>
+    <div class="star-chip">⭐ <span class="starCount">0</span></div>
+  </div>
+  <div class="family-picker" id="familyPicker"></div>
+  <div class="family-stage">
+    <div class="rime-display" id="rimeDisplay">-at</div>
+    <div class="onset-grid" id="onsetGrid"></div>
+  </div>
+  <p class="hint-note">💡 Tap a card to hear the new rhyming word!</p>
+</div>
+
+<!-- ============ QUIZ ============ -->
+<div class="screen" id="quizScreen">
+  <div class="topbar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="screen-title">🦄 Princess Quiz</div>
+    <div class="star-chip">💎 <span id="quizGems">0</span></div>
+  </div>
+  <div class="quiz-mode-row">
+    <button class="btn btn-pink" id="modeSoundBtn" onclick="setQuizMode('sound')">🔊 Sound Hunt</button>
+    <button class="btn btn-ghost" id="modeWordBtn" onclick="setQuizMode('word')">🖼️ Word Match</button>
+  </div>
+  <div class="quiz-card">
+    <div class="quiz-question" id="quizQuestion">Which letter makes this sound?</div>
+    <div class="quiz-word" id="quizWord" style="display:none">cat</div>
+    <button class="btn btn-purple" id="quizReplay" onclick="replayQuizSound()" style="margin-bottom:1rem">🔊 Play sound again</button>
+    <div class="quiz-options" id="quizOptions"></div>
+    <div class="gem-bar" id="gemBar"></div>
+  </div>
+</div>
+
+<!-- celebration -->
+<div class="celebrate" id="celebrate">
+  <div class="celebrate-inner">
+    <div class="ce" id="celebrateEmoji">🎉</div>
+    <div class="ct" id="celebrateText">Wonderful!</div>
+  </div>
+</div>
+
+<!-- parent guide -->
+<div class="overlay" id="guideOverlay" onclick="if(event.target===this)closeGuide()">
+  <div class="guide-modal">
+    <button class="close-x" onclick="closeGuide()">✕</button>
+    <h2>📖 Guide for Grown-ups</h2>
+    <p>This app follows <b>systematic synthetic phonics</b> — the method used in schools and proven by reading research to work best for beginners.</p>
+    <h3>1. Sounds before names 🔊</h3>
+    <p>Teach the letter <b>sound</b> first ("mmm"), not the name ("em"). Sounds are what we blend into words. Keep sounds short and clean — say "t", not "tuh" with a big "uh".</p>
+    <h3>2. Follow the letter order 🔤</h3>
+    <p>The letters are grouped in teaching order, starting with <b>s, a, t, p, i, n</b> — these six letters build lots of real words (sat, pin, tap, nap…), so your child can read whole words very quickly.</p>
+    <h3>3. Blend, blend, blend 🧩</h3>
+    <p>In <b>Sound It Out</b>, tap each tile ("c… a… t"), then say the sounds faster and faster until they melt into the word: "cat!" Use "🐢 Sound it out" to model it, and always celebrate with "⭐ I read it!"</p>
+    <h3>4. Little and often ⏰</h3>
+    <p>5–10 minutes a day beats one long weekly session. Stop while it's still fun! Move to the next level only when the current one feels easy.</p>
+    <h3>5. Keep reading aloud 📚</h3>
+    <p>This app teaches decoding — keep reading picture books aloud together every day for vocabulary and the love of stories. Decodable books ("Bob Books", "Songbirds") pair perfectly with each level here.</p>
+    <h3>Tip 🍎</h3>
+    <p>The voice comes from your device's speech engine. If you hear nothing, check the ringer/volume switch and tap any letter once to wake up audio.</p>
+  </div>
+</div>
+
+<div class="mute-note" id="muteNote">🔇 Speech is not available on this device</div>
+
+<script>
+'use strict';
+/* ================= DATA ================= */
+// Letter sounds: TTS-friendly phoneme approximations + anchor word & emoji.
+const LETTERS = {
+  s:{ph:'sss', word:'sun', emoji:'☀️'},
+  a:{ph:'ah', word:'apple', emoji:'🍎'},
+  t:{ph:'tuh', word:'tiara', emoji:'👑'},
+  p:{ph:'puh', word:'princess', emoji:'👸'},
+  i:{ph:'ih', word:'igloo', emoji:'🧊'},
+  n:{ph:'nnn', word:'nest', emoji:'🪺'},
+  m:{ph:'mmm', word:'moon', emoji:'🌙'},
+  d:{ph:'duh', word:'dress', emoji:'👗'},
+  g:{ph:'guh', word:'gift', emoji:'🎁'},
+  o:{ph:'aw', word:'octopus', emoji:'🐙'},
+  c:{ph:'kuh', word:'castle', emoji:'🏰'},
+  k:{ph:'kuh', word:'key', emoji:'🗝️'},
+  e:{ph:'eh', word:'egg', emoji:'🥚'},
+  u:{ph:'uh', word:'umbrella', emoji:'☂️'},
+  r:{ph:'ruh', word:'rainbow', emoji:'🌈'},
+  h:{ph:'huh', word:'heart', emoji:'💖'},
+  b:{ph:'buh', word:'butterfly', emoji:'🦋'},
+  f:{ph:'fff', word:'fairy', emoji:'🧚'},
+  l:{ph:'lll', word:'lion', emoji:'🦁'},
+  j:{ph:'juh', word:'jewel', emoji:'💎'},
+  v:{ph:'vvv', word:'violin', emoji:'🎻'},
+  w:{ph:'wuh', word:'wand', emoji:'🪄'},
+  x:{ph:'ks', word:'fox', emoji:'🦊'},
+  y:{ph:'yuh', word:'yarn', emoji:'🧶'},
+  z:{ph:'zzz', word:'zebra', emoji:'🦓'},
+  q:{ph:'kwuh', word:'queen', emoji:'👑'}
+};
+// Teaching order (Letters and Sounds phase-2 style, starting with SATPIN)
+const LETTER_GROUPS = [
+  {name:'s a t p', letters:['s','a','t','p']},
+  {name:'i n m d', letters:['i','n','m','d']},
+  {name:'g o c k', letters:['g','o','c','k']},
+  {name:'e u r h', letters:['e','u','r','h']},
+  {name:'b f l j', letters:['b','f','l','j']},
+  {name:'v w x y z q', letters:['v','w','x','y','z','q']}
+];
+const VOWELS = new Set(['a','e','i','o','u']);
+
+// CVC word levels following the same letter progression
+const WORD_LEVELS = [
+  {name:'Level 1 ✨', hint:'s a t p i n', words:[
+    {w:'sit', e:'🪑'}, {w:'pin', e:'📌'}, {w:'tap', e:'🚰'}, {w:'nap', e:'😴'},
+    {w:'sip', e:'🥤'}, {w:'pan', e:'🍳'}, {w:'tin', e:'🥫'}, {w:'ant', e:'🐜'},
+    {w:'pit', e:'🕳️'}, {w:'nip', e:'🦀'}
+  ]},
+  {name:'Level 2 🌸', hint:'+ m d g o c k', words:[
+    {w:'cat', e:'🐱'}, {w:'dog', e:'🐶'}, {w:'map', e:'🗺️'}, {w:'mop', e:'🧹'},
+    {w:'dot', e:'🔴'}, {w:'kid', e:'🧒'}, {w:'pot', e:'🍲'}, {w:'cap', e:'🧢'},
+    {w:'dig', e:'⛏️'}, {w:'pig', e:'🐷'}
+  ]},
+  {name:'Level 3 🌈', hint:'+ e u r h', words:[
+    {w:'hen', e:'🐔'}, {w:'ten', e:'🔟'}, {w:'net', e:'🥅'}, {w:'sun', e:'☀️'},
+    {w:'cup', e:'☕'}, {w:'run', e:'🏃'}, {w:'hat', e:'🎩'}, {w:'rat', e:'🐀'},
+    {w:'hug', e:'🤗'}, {w:'red', e:'❤️'}
+  ]},
+  {name:'Level 4 👑', hint:'+ b f l j', words:[
+    {w:'bed', e:'🛏️'}, {w:'bug', e:'🐛'}, {w:'bus', e:'🚌'}, {w:'fan', e:'🪭'},
+    {w:'log', e:'🪵'}, {w:'leg', e:'🦵'}, {w:'lip', e:'👄'}, {w:'jet', e:'✈️'},
+    {w:'jam', e:'🫙'}, {w:'bag', e:'👜'}
+  ]},
+  {name:'Level 5 💎', hint:'+ v w x y z', words:[
+    {w:'van', e:'🚐'}, {w:'web', e:'🕸️'}, {w:'wig', e:'💇'}, {w:'six', e:'6️⃣'},
+    {w:'box', e:'📦'}, {w:'fox', e:'🦊'}, {w:'zip', e:'🤐'}, {w:'yam', e:'🍠'},
+    {w:'wet', e:'💧'}, {w:'mix', e:'🥣'}
+  ]}
+];
+
+// Word families (rimes) with real-word onsets and pictures
+const FAMILIES = {
+  'at':[{o:'c',e:'🐱'},{o:'h',e:'🎩'},{o:'m',e:'🧘'},{o:'r',e:'🐀'},{o:'b',e:'🦇'},{o:'s',e:'🪑'},{o:'p',e:'🖐️'},{o:'f',e:'😺'}],
+  'an':[{o:'c',e:'🥫'},{o:'f',e:'🪭'},{o:'m',e:'👨'},{o:'p',e:'🍳'},{o:'r',e:'🏃'},{o:'t',e:'🌞'},{o:'v',e:'🚐'}],
+  'ap':[{o:'c',e:'🧢'},{o:'m',e:'🗺️'},{o:'n',e:'😴'},{o:'t',e:'🚰'},{o:'l',e:'🦵'},{o:'g',e:'🕳️'}],
+  'en':[{o:'h',e:'🐔'},{o:'t',e:'🔟'},{o:'p',e:'🖊️'},{o:'d',e:'🦁'},{o:'m',e:'👬'}],
+  'et':[{o:'j',e:'✈️'},{o:'n',e:'🥅'},{o:'p',e:'🐶'},{o:'v',e:'🩺'},{o:'w',e:'💧'}],
+  'ig':[{o:'b',e:'🐘'},{o:'d',e:'⛏️'},{o:'p',e:'🐷'},{o:'w',e:'💇'},{o:'f',e:'🌿'}],
+  'in':[{o:'b',e:'🗑️'},{o:'f',e:'🐬'},{o:'p',e:'📌'},{o:'t',e:'🥫'},{o:'w',e:'🏆'}],
+  'op':[{o:'h',e:'🐸'},{o:'m',e:'🧹'},{o:'p',e:'🍭'},{o:'t',e:'🎩'},{o:'c',e:'👮'}],
+  'og':[{o:'d',e:'🐶'},{o:'f',e:'🌫️'},{o:'j',e:'🏃'},{o:'l',e:'🪵'},{o:'h',e:'🐷'}],
+  'ug':[{o:'b',e:'🐛'},{o:'h',e:'🤗'},{o:'j',e:'🫙'},{o:'m',e:'☕'},{o:'r',e:'🧶'},{o:'t',e:'🚢'}],
+  'un':[{o:'b',e:'🥯'},{o:'f',e:'🎉'},{o:'r',e:'🏃'},{o:'s',e:'☀️'}]
+};
+
+const PRAISE = ['Wonderful!','Amazing!','You did it!','Super reading!','Brilliant!','Great job, princess!','Magical!','Fantastic!'];
+const PRAISE_EMOJI = ['🎉','👑','🌟','🦄','💖','🧚','✨','🏰'];
+
+/* ================= STATE ================= */
+const store = {
+  load(){ try{ return JSON.parse(localStorage.getItem('princessReading')||'{}'); }catch(e){ return {}; } },
+  save(s){ try{ localStorage.setItem('princessReading', JSON.stringify(s)); }catch(e){} }
+};
+let state = Object.assign({stars:0, gems:0, wordsRead:{}, lettersHeard:{}}, store.load());
+
+let curGroup = 0, curLetterIdx = 0;          // letters screen
+let curLevel = 0, curWordIdx = 0;            // words screen
+let curFamily = 'at';                         // families screen
+let quizMode = 'sound', quizAnswer = null, quizStreak = 0, quizLock = false;
+let speaking = false;
+
+/* ================= SPEECH ================= */
+const synth = window.speechSynthesis || null;
+let voice = null;
+function pickVoice(){
+  if(!synth) return;
+  const vs = synth.getVoices();
+  if(!vs || !vs.length) return;
+  voice =
+    vs.find(v=>/en[-_]/i.test(v.lang) && /female|samantha|karen|victoria|zira|jenny|aria/i.test(v.name)) ||
+    vs.find(v=>v.lang==='en-US') || vs.find(v=>/^en/i.test(v.lang)) || vs[0];
+}
+if(synth){ pickVoice(); synth.onvoiceschanged = pickVoice; }
+
+function speak(text, opts){
+  opts = opts||{};
+  return new Promise(resolve=>{
+    if(!synth){ showMuteNote(); return resolve(); }
+    try{
+      const u = new SpeechSynthesisUtterance(text);
+      if(voice) u.voice = voice;
+      u.lang = (voice && voice.lang) || 'en-US';
+      u.rate = opts.rate!=null ? opts.rate : 0.85;
+      u.pitch = opts.pitch!=null ? opts.pitch : 1.15;
+      u.volume = 1;
+      let done = false;
+      const finish = ()=>{ if(!done){ done=true; resolve(); } };
+      u.onend = finish; u.onerror = finish;
+      setTimeout(finish, Math.max(2500, text.length*220)); // safety net
+      synth.speak(u);
+    }catch(e){ resolve(); }
+  });
+}
+function cancelSpeech(){ if(synth){ try{ synth.cancel(); }catch(e){} } }
+function showMuteNote(){
+  const n = document.getElementById('muteNote');
+  n.style.display = 'block';
+  setTimeout(()=>{ n.style.display='none'; }, 3000);
+}
+const wait = ms => new Promise(r=>setTimeout(r, ms));
+
+/* ================= NAV ================= */
+function showScreen(id){
+  cancelSpeech();
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  refreshCounters();
+}
+function goHome(){ showScreen('homeScreen'); }
+function goLetters(){ showScreen('lettersScreen'); renderLetters(); }
+function goWords(){ showScreen('wordsScreen'); renderWord(); }
+function goFamilies(){ showScreen('familiesScreen'); renderFamilies(); }
+function goQuiz(){ showScreen('quizScreen'); newQuizRound(); }
+function openGuide(){ document.getElementById('guideOverlay').classList.add('show'); }
+function closeGuide(){ document.getElementById('guideOverlay').classList.remove('show'); }
+
+function refreshCounters(){
+  document.getElementById('homeStars').textContent = state.stars;
+  document.getElementById('homeGems').textContent = state.gems;
+  document.getElementById('homeCrowns').textContent = Math.floor(state.stars/10);
+  document.querySelectorAll('.starCount').forEach(el=>el.textContent = state.stars);
+  document.getElementById('quizGems').textContent = state.gems;
+}
+
+/* ================= CELEBRATION ================= */
+function celebrate(sayIt){
+  const txt = PRAISE[Math.floor(Math.random()*PRAISE.length)];
+  const emo = PRAISE_EMOJI[Math.floor(Math.random()*PRAISE_EMOJI.length)];
+  document.getElementById('celebrateText').textContent = txt;
+  document.getElementById('celebrateEmoji').textContent = emo;
+  const c = document.getElementById('celebrate');
+  c.classList.add('show');
+  sparkleRain();
+  if(sayIt !== false) speak(txt, {rate:1, pitch:1.3});
+  setTimeout(()=>c.classList.remove('show'), 1600);
+}
+function sparkleRain(){
+  const glyphs = ['✨','⭐','💖','🌸','💎','🦋'];
+  for(let i=0;i<14;i++){
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.textContent = glyphs[Math.floor(Math.random()*glyphs.length)];
+    s.style.left = (5+Math.random()*90)+'vw';
+    s.style.top = (Math.random()*20)+'vh';
+    s.style.animationDelay = (Math.random()*0.5)+'s';
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(), 2400);
+  }
+}
+
+/* ================= LETTERS ================= */
+function renderLetters(){
+  const tabs = document.getElementById('groupTabs');
+  tabs.innerHTML = '';
+  LETTER_GROUPS.forEach((g,i)=>{
+    const b = document.createElement('button');
+    b.className = 'gtab'+(i===curGroup?' active':'');
+    b.textContent = (i+1)+'. '+g.name;
+    b.onclick = ()=>{ curGroup=i; renderLetters(); };
+    tabs.appendChild(b);
+  });
+  const grid = document.getElementById('lettersGrid');
+  grid.innerHTML = '';
+  LETTER_GROUPS[curGroup].letters.forEach((L,i)=>{
+    const d = LETTERS[L];
+    const card = document.createElement('div');
+    card.className = 'letter-card'+(state.lettersHeard[L]?' done':'');
+    card.innerHTML = '<div class="lc">'+L.toUpperCase()+L+'</div>'+
+      '<div class="le">'+d.emoji+'</div><div class="lw">'+d.word+'</div>';
+    card.onclick = ()=>openLetter(i);
+    grid.appendChild(card);
+  });
+}
+function letterList(){ return LETTER_GROUPS[curGroup].letters; }
+function openLetter(i){
+  curLetterIdx = i;
+  const L = letterList()[i], d = LETTERS[L];
+  document.getElementById('modalLetter').textContent = L.toUpperCase()+L;
+  document.getElementById('modalEmoji').textContent = d.emoji;
+  document.getElementById('modalWord').textContent = d.word;
+  document.getElementById('modalWordBtn').textContent = d.emoji+' Word';
+  document.getElementById('letterOverlay').classList.add('show');
+  if(!state.lettersHeard[L]){ state.lettersHeard[L] = true; store.save(state); }
+  playLetterIntro();
+}
+function closeLetter(){ document.getElementById('letterOverlay').classList.remove('show'); cancelSpeech(); renderLetters(); }
+function bounceLetter(){
+  const el = document.getElementById('modalLetter');
+  el.classList.remove('bounce'); void el.offsetWidth; el.classList.add('bounce');
+}
+async function playLetterIntro(){
+  const L = letterList()[curLetterIdx], d = LETTERS[L];
+  bounceLetter();
+  cancelSpeech();
+  await speak(d.ph, {rate:0.65});
+  await wait(150);
+  await speak(d.ph, {rate:0.65});
+  await wait(200);
+  await speak(d.word+'!', {rate:0.9});
+}
+function playLetterSound(){
+  const d = LETTERS[letterList()[curLetterIdx]];
+  bounceLetter(); cancelSpeech(); speak(d.ph, {rate:0.6});
+}
+function playLetterName(){
+  const L = letterList()[curLetterIdx];
+  bounceLetter(); cancelSpeech();
+  speak('The letter '+L.toUpperCase()+'.', {rate:0.9});
+}
+function playLetterWord(){
+  const L = letterList()[curLetterIdx], d = LETTERS[L];
+  cancelSpeech();
+  (async()=>{ await speak(d.ph, {rate:0.65}); await wait(150); await speak(d.word+'!', {rate:0.85}); })();
+}
+function nextLetter(){
+  if(curLetterIdx < letterList().length-1){ openLetter(curLetterIdx+1); }
+  else if(curGroup < LETTER_GROUPS.length-1){ curGroup++; renderLetters(); openLetter(0); }
+}
+function prevLetter(){
+  if(curLetterIdx > 0){ openLetter(curLetterIdx-1); }
+  else if(curGroup > 0){ curGroup--; renderLetters(); openLetter(letterList().length-1); }
+}
+
+/* ================= WORDS ================= */
+function renderWord(){
+  const tabs = document.getElementById('levelTabs');
+  tabs.innerHTML = '';
+  WORD_LEVELS.forEach((lv,i)=>{
+    const b = document.createElement('button');
+    b.className = 'gtab'+(i===curLevel?' active':'');
+    b.textContent = lv.name;
+    b.title = lv.hint;
+    b.onclick = ()=>{ curLevel=i; curWordIdx=0; renderWord(); };
+    tabs.appendChild(b);
+  });
+  const item = WORD_LEVELS[curLevel].words[curWordIdx];
+  const emojiEl = document.getElementById('wordEmoji');
+  emojiEl.textContent = item.e;
+  emojiEl.classList.remove('hidden-pic');
+  const tiles = document.getElementById('wordTiles');
+  tiles.innerHTML = '';
+  item.w.split('').forEach((ch,i)=>{
+    const t = document.createElement('button');
+    t.className = 'tile'+(VOWELS.has(ch)?' vowel':'');
+    t.textContent = ch;
+    t.onclick = ()=>tapTile(i);
+    tiles.appendChild(t);
+  });
+  const read = !!state.wordsRead[item.w];
+  document.getElementById('wordProgress').textContent =
+    (read?'⭐ You read this one! ':'')+
+    'Word '+(curWordIdx+1)+' of '+WORD_LEVELS[curLevel].words.length+' · '+WORD_LEVELS[curLevel].hint;
+}
+function curWord(){ return WORD_LEVELS[curLevel].words[curWordIdx]; }
+function litTile(i, on){
+  const tiles = document.querySelectorAll('#wordTiles .tile');
+  if(tiles[i]) tiles[i].classList.toggle('lit', on);
+}
+async function tapTile(i){
+  const ch = curWord().w[i];
+  cancelSpeech();
+  litTile(i, true);
+  await speak(LETTERS[ch].ph, {rate:0.6});
+  litTile(i, false);
+}
+async function soundItOut(){
+  if(speaking) return; speaking = true;
+  cancelSpeech();
+  const w = curWord().w;
+  for(let i=0;i<w.length;i++){
+    litTile(i,true);
+    await speak(LETTERS[w[i]].ph, {rate:0.6});
+    await wait(250);
+    litTile(i,false);
+  }
+  await wait(300);
+  await speak(w+'!', {rate:0.8});
+  speaking = false;
+}
+function sayWholeWord(){
+  cancelSpeech();
+  speak(curWord().w+'!', {rate:0.75});
+}
+function readItMyself(){
+  const w = curWord().w;
+  if(!state.wordsRead[w]){
+    state.wordsRead[w] = true;
+    state.stars++;
+    store.save(state);
+  }
+  refreshCounters();
+  celebrate();
+  setTimeout(()=>{ renderWord(); }, 900);
+}
+function nextWord(){
+  const n = WORD_LEVELS[curLevel].words.length;
+  if(curWordIdx < n-1){ curWordIdx++; }
+  else if(curLevel < WORD_LEVELS.length-1){ curLevel++; curWordIdx=0; }
+  else { curLevel=0; curWordIdx=0; }
+  renderWord();
+}
+function prevWord(){
+  if(curWordIdx > 0){ curWordIdx--; }
+  else if(curLevel > 0){ curLevel--; curWordIdx = WORD_LEVELS[curLevel].words.length-1; }
+  renderWord();
+}
+
+/* ================= FAMILIES ================= */
+function renderFamilies(){
+  const picker = document.getElementById('familyPicker');
+  picker.innerHTML = '';
+  Object.keys(FAMILIES).forEach(f=>{
+    const b = document.createElement('button');
+    b.className = 'fam-chip'+(f===curFamily?' active':'');
+    b.textContent = '-'+f;
+    b.onclick = ()=>{ curFamily=f; renderFamilies(); };
+    picker.appendChild(b);
+  });
+  document.getElementById('rimeDisplay').textContent = '-'+curFamily;
+  const grid = document.getElementById('onsetGrid');
+  grid.innerHTML = '';
+  FAMILIES[curFamily].forEach(item=>{
+    const b = document.createElement('button');
+    b.className = 'onset-btn';
+    b.innerHTML = '<b>'+item.o+curFamily+'</b><span class="oe">'+item.e+'</span>';
+    b.onclick = ()=>sayFamilyWord(item.o);
+    grid.appendChild(b);
+  });
+}
+async function sayFamilyWord(onset){
+  cancelSpeech();
+  const word = onset+curFamily;
+  await speak(LETTERS[onset].ph, {rate:0.6});
+  await wait(200);
+  await speak(curFamily, {rate:0.7});
+  await wait(250);
+  await speak(word+'!', {rate:0.8});
+}
+
+/* ================= QUIZ ================= */
+function setQuizMode(m){
+  quizMode = m;
+  document.getElementById('modeSoundBtn').className = 'btn '+(m==='sound'?'btn-pink':'btn-ghost');
+  document.getElementById('modeWordBtn').className = 'btn '+(m==='word'?'btn-pink':'btn-ghost');
+  newQuizRound();
+}
+function sample(arr, n){
+  const copy = arr.slice(), out = [];
+  while(out.length<n && copy.length){ out.push(copy.splice(Math.floor(Math.random()*copy.length),1)[0]); }
+  return out;
+}
+function newQuizRound(){
+  quizLock = false;
+  const q = document.getElementById('quizQuestion');
+  const wordEl = document.getElementById('quizWord');
+  const replay = document.getElementById('quizReplay');
+  const opts = document.getElementById('quizOptions');
+  opts.innerHTML = '';
+  document.getElementById('gemBar').textContent = quizStreak>0 ? ('🔥 '+quizStreak+' in a row!') : 'Pick an answer to win a gem! 💎';
+  if(quizMode==='sound'){
+    // hear a sound, pick the letter
+    q.textContent = 'Which letter makes this sound?';
+    wordEl.style.display = 'none';
+    replay.style.display = 'inline-block';
+    const letters = sample(Object.keys(LETTERS).filter(l=>l!=='q'), 4);
+    quizAnswer = letters[Math.floor(Math.random()*letters.length)];
+    letters.forEach(L=>{
+      const b = document.createElement('button');
+      b.className = 'quiz-opt';
+      b.textContent = L.toUpperCase()+L;
+      b.onclick = ()=>answerQuiz(b, L===quizAnswer);
+      opts.appendChild(b);
+    });
+    replayQuizSound();
+  } else {
+    // read the word, pick the picture
+    const all = WORD_LEVELS.flatMap(lv=>lv.words);
+    const three = sample(all, 4);
+    const target = three[Math.floor(Math.random()*three.length)];
+    quizAnswer = target.w;
+    q.textContent = 'Read the word — find its picture!';
+    wordEl.style.display = 'block';
+    wordEl.textContent = target.w;
+    replay.style.display = 'none';
+    three.forEach(item=>{
+      const b = document.createElement('button');
+      b.className = 'quiz-opt';
+      b.textContent = item.e;
+      b.onclick = ()=>answerQuiz(b, item.w===quizAnswer);
+      opts.appendChild(b);
+    });
+  }
+}
+function replayQuizSound(){
+  if(quizMode!=='sound' || !quizAnswer) return;
+  cancelSpeech();
+  (async()=>{ await speak(LETTERS[quizAnswer].ph, {rate:0.6}); await wait(150); await speak(LETTERS[quizAnswer].ph, {rate:0.6}); })();
+}
+function answerQuiz(btn, correct){
+  if(quizLock) return;
+  if(correct){
+    quizLock = true;
+    btn.classList.add('correct');
+    state.gems++; quizStreak++;
+    store.save(state); refreshCounters();
+    celebrate();
+    setTimeout(newQuizRound, 1500);
+  } else {
+    quizStreak = 0;
+    btn.classList.add('wrong');
+    speak('Try again!', {rate:1, pitch:1.2});
+    setTimeout(()=>btn.classList.remove('wrong'), 600);
+    document.getElementById('gemBar').textContent = 'Almost! Have another try 💪';
+  }
+}
+
+/* ================= INIT ================= */
+// Wake up speech synthesis on first interaction (needed on iOS/Android)
+let primed = false;
+document.addEventListener('pointerdown', ()=>{
+  if(primed || !synth) return;
+  primed = true;
+  try{
+    const u = new SpeechSynthesisUtterance(' ');
+    u.volume = 0; synth.speak(u);
+  }catch(e){}
+}, {once:false, capture:true});
+
+refreshCounters();
+</script>
+</body>
+</html>
